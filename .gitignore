@@ -1,19 +1,60 @@
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
-CMakeUserPresets.json
+# Build artifacts
+/build/
+/build-*/
+/CMakeFiles/
+/CMakeCache.txt
+/Makefile
+/cmake_install.cmake
+/install_manifest.txt
 
-# CLion
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#cmake-build-*
+# Compiled object files
+*.o
+*.obj
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+*.d
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*~
+*.user
+*.sublime-*
+*.code-workspace
+
+# STM32CubeIDE specific
+*.launch
+*.log
+*.settings/
+.project
+.cproject
+
+# Backup & temporary files
+*.bak
+*.tmp
+*.old
+*.orig
+*.rej
+*.DS_Store
+Thumbs.db
+
+# Output folders
+/Debug/
+/Release/
+
+# Auto-generated sources (HAL/LL/STM32CubeMX)
+MX_*/  # if using STM32CubeMX-generated folders
+Core/Inc/.mxproject
+Core/Src/.mxproject
+
+# Python virtual environments (if using scripts)
+/venv/
+/.env/
+
+# Misc
+tags
+TAGS
