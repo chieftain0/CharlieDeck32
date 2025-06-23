@@ -8,6 +8,7 @@ static void MX_TIM1_Init(void);
 static void MX_GPIO_Init(void);
 static void MX_USB_PCD_Init(void);
 
+// LED Matrix variables
 GPIO_TypeDef *gpio_ports[] = {
     GPIOA, GPIOA, GPIOA, GPIOB, GPIOB, GPIOB, GPIOB, GPIOB,
     GPIOB, GPIOB, GPIOB, GPIOB, GPIOA, GPIOA, GPIOA, GPIOA};
@@ -20,7 +21,7 @@ uint16_t gpio_pins[] = {
     GPIO_PIN_7, GPIO_PIN_6, GPIO_PIN_5, GPIO_PIN_4};
 #define NUM_PINS (sizeof(gpio_pins) / sizeof(gpio_pins[0]))
 
-bool matrix[NUM_PINS - 1][NUM_PINS] = {
+bool heart_matrix[NUM_PINS - 1][NUM_PINS] = {
     {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
     {0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0},
     {0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0},
@@ -36,6 +37,29 @@ bool matrix[NUM_PINS - 1][NUM_PINS] = {
     {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}};
+
+bool smile_matrix[NUM_PINS - 1][NUM_PINS] = {
+    {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
+    {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+    {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+    {0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0},
+    {1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1},
+    {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1},
+    {1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1},
+    {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+    {0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0},
+    {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+    {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+    {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0}};
+
+// Button variables (External high pull-up)
+// UP, DOWN, LEFT, RIGHT, A, B, C, D
+static GPIO_TypeDef *button_ports[8] = {GPIOB, GPIOB, GPIOB, GPIOB, GPIOA, GPIOA, GPIOA, GPIOA};
+static uint16_t button_pins[8] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_3, GPIO_PIN_6, GPIO_PIN_2, GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_3};
+static bool button_flags[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 /**
  * @brief  The application entry point.
@@ -54,7 +78,48 @@ int main(void)
 
   while (1)
   {
-    Charlieplex_Display(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, matrix, 50);
+    unsigned long time_now = HAL_GetTick();
+    while (HAL_GetTick() - time_now < 2000)
+    {
+      Charlieplex_Display(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, heart_matrix, 30);
+    }
+
+    time_now = HAL_GetTick();
+    while (HAL_GetTick() - time_now < 2000)
+    {
+      Charlieplex_Display(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, smile_matrix, 30);
+    }
+
+    for (int i = 0; i < 8; i++)
+    {
+      if (HAL_GPIO_ReadPin(button_ports[i], button_pins[i]) == 0 && button_flags[i] == 0)
+      {
+        button_flags[i] = 1;
+        switch (i)
+        {
+        case 0:
+          break;
+        case 1:
+          break;
+        case 2:
+          break;
+        case 3:
+          break;
+        case 4:
+          break;
+        case 5:
+          break;
+        case 6:
+          break;
+        case 7:
+          break;
+        }
+      }
+      else if (HAL_GPIO_ReadPin(button_ports[i], button_pins[i]) == 1 && button_flags[i] == 1)
+      {
+        button_flags[i] = 0;
+      }
+    }
   }
 }
 
@@ -171,30 +236,25 @@ static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
+  for (int i = 0; i < (int)NUM_PINS; i++)
+  {
+    GPIO_InitStruct.Pin = gpio_pins[i];
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(gpio_ports[i], &GPIO_InitStruct);
+  }
 
-  /*Configure GPIO pins : PA0 PA1 PA2 PA3 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PA15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_15;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PB3 PB4 PB5 PB6 */
-  GPIO_InitStruct.Pin = GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  for (int i = 0; i < 8; i++)
+  {
+    GPIO_InitStruct.Pin = button_pins[i];
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(button_ports[i], &GPIO_InitStruct);
+  }
 }
 
 /**
