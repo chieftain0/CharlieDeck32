@@ -111,7 +111,7 @@ void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, in
         for (int j = 0; j < num_pins; j++)
         {
             Charlieplex_SetLED(ports, num_ports, pins, num_pins, j, i, matrix[i][j]);
-            HAL_Delay(pixel_delay);
+            Delay_us(pixel_delay);
             Charlieplex_SetLED(ports, num_ports, pins, num_pins, j, i, 0);
         }
     }

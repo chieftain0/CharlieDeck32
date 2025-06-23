@@ -43,7 +43,7 @@ int main(void)
       for (int j = 0; j < (int)(NUM_PINS); j++)
       {
         Charlieplex_SetLED(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, j, i, true);
-        HAL_Delay(100);
+        HAL_Delay(25);
         Charlieplex_SetLED(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, j, i, false);
       }
     }
