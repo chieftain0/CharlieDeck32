@@ -8,6 +8,10 @@ static void MX_TIM1_Init(void);
 static void MX_GPIO_Init(void);
 static void MX_USB_PCD_Init(void);
 
+// USB variables
+GPIO_TypeDef *usb_enum_pin_port = GPIOA;
+uint16_t usb_enum_pin = GPIO_PIN_15;
+
 // LED Matrix variables
 GPIO_TypeDef *gpio_ports[] = {
     GPIOA, GPIOA, GPIOA, GPIOB, GPIOB, GPIOB, GPIOB, GPIOB,
@@ -255,6 +259,11 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(button_ports[i], &GPIO_InitStruct);
   }
+
+  GPIO_InitStruct.Pin = usb_enum_pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(usb_enum_pin_port, &GPIO_InitStruct);
 }
 
 /**
