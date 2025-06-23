@@ -20,7 +20,22 @@ uint16_t gpio_pins[] = {
     GPIO_PIN_7, GPIO_PIN_6, GPIO_PIN_5, GPIO_PIN_4};
 #define NUM_PINS (sizeof(gpio_pins) / sizeof(gpio_pins[0]))
 
-bool matrix[NUM_PINS - 1][NUM_PINS] = {0};
+bool matrix[NUM_PINS - 1][NUM_PINS] = {
+    {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
+    {0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0},
+    {0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+    {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+    {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+    {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}};
 
 /**
  * @brief  The application entry point.
@@ -39,19 +54,8 @@ int main(void)
 
   while (1)
   {
-    for (int i = 0; i < (int)(NUM_PINS - 1); i++)
-    {
-      for (int j = 0; j < (int)(NUM_PINS); j++)
-      {
-        Charlieplex_SetLED(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, j, i, true);
-        Delay_us(1500);
-        Charlieplex_SetLED(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, j, i, false);
-      }
-    }
+    Charlieplex_Display(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, matrix, 50);
   }
-
-  // never reaches
-  Charlieplex_Display(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, matrix, 50);
 }
 
 /**
