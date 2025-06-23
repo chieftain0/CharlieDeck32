@@ -9,12 +9,16 @@ static void MX_USB_PCD_Init(void);
 GPIO_TypeDef *gpio_ports[] = {
     GPIOA, GPIOA, GPIOA, GPIOB, GPIOB, GPIOB, GPIOB, GPIOB,
     GPIOB, GPIOB, GPIOB, GPIOB, GPIOA, GPIOA, GPIOA, GPIOA};
+#define NUM_PORTS (sizeof(gpio_ports) / sizeof(gpio_ports[0]))
 
 uint16_t gpio_pins[] = {
     GPIO_PIN_10, GPIO_PIN_9, GPIO_PIN_8, GPIO_PIN_15,
     GPIO_PIN_14, GPIO_PIN_13, GPIO_PIN_12, GPIO_PIN_11,
     GPIO_PIN_10, GPIO_PIN_2, GPIO_PIN_1, GPIO_PIN_0,
     GPIO_PIN_7, GPIO_PIN_6, GPIO_PIN_5, GPIO_PIN_4};
+#define NUM_PINS (sizeof(gpio_pins) / sizeof(gpio_pins[0]))
+
+bool matrix[NUM_PINS - 1][NUM_PINS] = {0};
 
 /**
  * @brief  The application entry point.
@@ -27,20 +31,23 @@ int main(void)
   MX_GPIO_Init();
   MX_USB_PCD_Init();
 
-  Charlieplex_Clear(gpio_ports, sizeof(gpio_ports) / sizeof(gpio_ports[0]), gpio_pins, sizeof(gpio_ports) / sizeof(gpio_ports[0]));
+  Charlieplex_Clear(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS);
 
   while (1)
   {
-    for (int i = 0; i < (int)(sizeof(gpio_ports) / sizeof(gpio_ports[0])) - 1; i++)
+    for (int i = 0; i < (int)(NUM_PINS - 1); i++)
     {
-      for (int j = 0; j < (int)(sizeof(gpio_pins) / sizeof(gpio_pins[0])); j++)
+      for (int j = 0; j < (int)(NUM_PINS); j++)
       {
-        Charlieplex_SetLED(gpio_ports, sizeof(gpio_ports) / sizeof(gpio_ports[0]), gpio_pins, sizeof(gpio_pins) / sizeof(gpio_pins[0]), j, i, true);
+        Charlieplex_SetLED(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, j, i, true);
         HAL_Delay(100);
-        Charlieplex_SetLED(gpio_ports, sizeof(gpio_ports) / sizeof(gpio_ports[0]), gpio_pins, sizeof(gpio_pins) / sizeof(gpio_pins[0]), j, i, false);
+        Charlieplex_SetLED(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, j, i, false);
       }
     }
   }
+
+  // never reaches
+  Charlieplex_Display(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, matrix, 50);
 }
 
 /**

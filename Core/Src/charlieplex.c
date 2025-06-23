@@ -87,3 +87,32 @@ void Charlieplex_SetLED(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int
         HAL_GPIO_Init(ports[y_int], &GPIO_InitStruct);
     }
 }
+
+/**
+ * @brief Display a matrix of booleans on a Charlieplexed LED array.
+ *
+ * @param ports Array of GPIO ports associated with each pin.
+ * @param num_ports Number of GPIO ports in the ports array.
+ * @param pins Array of pin numbers corresponding to each port.
+ * @param num_pins Number of pin numbers in the pins array.
+ * @param matrix 2D array of boolean values representing the desired state of each LED in the array.
+ * @param pixel_delay Time in milliseconds to delay between setting each LED state.
+ *
+ * @note The matrix is indexed as follows: matrix[row][column]. The indexes start at 0.
+ *       The number of rows in the matrix must be one less than num_pins.
+ *       The number of columns in the matrix must be equal to num_pins.
+ *
+ * @warning This function is blocking. Use with caution.
+ */
+void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int num_pins, bool matrix[num_pins - 1][num_pins], unsigned long pixel_delay)
+{
+    for (int i = 0; i < num_pins - 1; i++)
+    {
+        for (int j = 0; j < num_pins; j++)
+        {
+            Charlieplex_SetLED(ports, num_ports, pins, num_pins, j, i, matrix[i][j]);
+            HAL_Delay(pixel_delay);
+            Charlieplex_SetLED(ports, num_ports, pins, num_pins, j, i, 0);
+        }
+    }
+}
