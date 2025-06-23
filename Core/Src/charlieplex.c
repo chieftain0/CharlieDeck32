@@ -56,27 +56,34 @@ void Charlieplex_SetLED(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int
         return;
     }
 
+    int x_int = x;
+    int y_int = y;
+    if (y_int >= x_int)
+    {
+        y_int += 1;
+    }
+
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
     if (state)
     {
-        GPIO_InitStruct.Pin = pins[x];
+        GPIO_InitStruct.Pin = pins[x_int];
         GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-        HAL_GPIO_Init(ports[x], &GPIO_InitStruct);
-        HAL_GPIO_WritePin(ports[x], pins[x], GPIO_PIN_SET);
+        HAL_GPIO_Init(ports[x_int], &GPIO_InitStruct);
+        HAL_GPIO_WritePin(ports[x_int], pins[x_int], GPIO_PIN_SET);
 
-        GPIO_InitStruct.Pin = pins[y + 1];
-        HAL_GPIO_Init(ports[y + 1], &GPIO_InitStruct);
-        HAL_GPIO_WritePin(ports[y + 1], pins[y + 1], GPIO_PIN_RESET);
+        GPIO_InitStruct.Pin = pins[y_int];
+        HAL_GPIO_Init(ports[y_int], &GPIO_InitStruct);
+        HAL_GPIO_WritePin(ports[y_int], pins[y_int], GPIO_PIN_RESET);
     }
     else
     {
-        GPIO_InitStruct.Pin = pins[x];
+        GPIO_InitStruct.Pin = pins[x_int];
         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
-        HAL_GPIO_Init(ports[x], &GPIO_InitStruct);
-        GPIO_InitStruct.Pin = pins[y + 1];
-        HAL_GPIO_Init(ports[y + 1], &GPIO_InitStruct);
+        HAL_GPIO_Init(ports[x_int], &GPIO_InitStruct);
+        GPIO_InitStruct.Pin = pins[y_int];
+        HAL_GPIO_Init(ports[y_int], &GPIO_InitStruct);
     }
 }
