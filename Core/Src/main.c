@@ -34,6 +34,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USB_PCD_Init();
 
+  HAL_TIM_Base_Start(&htim1);
   Charlieplex_Clear(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS);
 
   while (1)
@@ -43,7 +44,7 @@ int main(void)
       for (int j = 0; j < (int)(NUM_PINS); j++)
       {
         Charlieplex_SetLED(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, j, i, true);
-        HAL_Delay(25);
+        Delay_us(1500);
         Charlieplex_SetLED(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, j, i, false);
       }
     }
@@ -104,7 +105,7 @@ static void MX_TIM1_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 0;
+  htim1.Init.Prescaler = (HAL_RCC_GetPCLK2Freq() / 1000000) - 1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 65535;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

@@ -120,8 +120,7 @@ void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, in
 void Delay_us(unsigned long us)
 {
     unsigned long start = TIM1->CNT;
-    unsigned long duration = us * (HAL_RCC_GetHCLKFreq() / 1000000);
-    while (TIM1->CNT - start < duration)
+    while (TIM1->CNT - start < us)
     {
     }
 }
