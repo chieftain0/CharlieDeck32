@@ -63,7 +63,8 @@ bool smile_matrix[NUM_PINS - 1][NUM_PINS] = {
 // UP, DOWN, LEFT, RIGHT, A, B, C, D
 static GPIO_TypeDef *button_ports[8] = {GPIOB, GPIOB, GPIOB, GPIOB, GPIOA, GPIOA, GPIOA, GPIOA};
 static uint16_t button_pins[8] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_3, GPIO_PIN_6, GPIO_PIN_2, GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_3};
-static bool button_flags[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+#define NUM_BUTTONS (sizeof(button_pins) / sizeof(button_pins[0]))
+static bool button_flags[] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 /**
  * @brief  The application entry point.
@@ -252,7 +253,7 @@ static void MX_GPIO_Init(void)
     HAL_GPIO_Init(gpio_ports[i], &GPIO_InitStruct);
   }
 
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < (int)NUM_BUTTONS; i++)
   {
     GPIO_InitStruct.Pin = button_pins[i];
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
