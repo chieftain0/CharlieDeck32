@@ -51,3 +51,21 @@ void Play_Snake(int screen_width, int screen_height, bool matrix[screen_height][
         }
     }
 }
+
+/**
+ * @brief Plays the ping pong game (WORK IN PROGRESS, OUTPUTS A SMILE)
+ * @param[in] screen_width Screen width
+ * @param[in] screen_height Screen height
+ * @param[out] matrix 2D array of bools representing the screen
+ * @param[in] button_mask Button mask, unused in this function
+ */
+void Play_Pong(int screen_width, int screen_height, bool matrix[screen_height][screen_width], uint16_t button_mask)
+{
+    for (int i = 0; i < screen_height; i++)
+    {
+        for (int j = 0; j < screen_width; j++)
+        {
+            matrix[i][j] = smile_matrix[i][j];
+        }
+    }
+}

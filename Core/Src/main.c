@@ -71,6 +71,9 @@ int main(void)
   HAL_TIM_Base_Start(&htim1);
   Charlieplex_Clear(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS);
 
+  static unsigned long time_now = 0;
+  time_now = HAL_GetTick();
+
   while (1)
   {
     uint16_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, GPIO_PIN_RESET);
@@ -104,8 +107,19 @@ int main(void)
       break;
     case 1:
       Play_Snake(NUM_MATRIX_PINS, NUM_MATRIX_PINS - 1, screen, button_mask);
+      if (HAL_GetTick() - time_now > 2000)
+      {
+        mode = 2;
+        time_now = HAL_GetTick();
+      }
       break;
     case 2:
+      Play_Pong(NUM_MATRIX_PINS, NUM_MATRIX_PINS - 1, screen, button_mask);
+      if (HAL_GetTick() - time_now > 2000)
+      {
+        mode = 1;
+        time_now = HAL_GetTick();
+      }
       break;
     case 3:
       break;
