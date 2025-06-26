@@ -11,6 +11,7 @@ extern "C"
 #include <stdbool.h>
 #include "stm32f1xx_hal.h"
 #include "charlieplex.h"
+#include "games.h"
 
   void Error_Handler(void);
 

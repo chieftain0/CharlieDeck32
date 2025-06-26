@@ -8,58 +8,26 @@ static void MX_TIM1_Init(void);
 static void MX_GPIO_Init(void);
 static void MX_USB_PCD_Init(void);
 
+uint16_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, bool PressState);
+
 // USB variables
 GPIO_TypeDef *usb_enum_pin_port = GPIOA;
 uint16_t usb_enum_pin = GPIO_PIN_15;
 
 // LED Matrix variables
-GPIO_TypeDef *gpio_ports[] = {
+GPIO_TypeDef *matrix_ports[] = {
     GPIOA, GPIOA, GPIOA, GPIOB, GPIOB, GPIOB, GPIOB, GPIOB,
     GPIOB, GPIOB, GPIOB, GPIOB, GPIOA, GPIOA, GPIOA, GPIOA};
-#define NUM_PORTS (sizeof(gpio_ports) / sizeof(gpio_ports[0]))
+#define NUM_MATRIX_PORTS (sizeof(matrix_ports) / sizeof(matrix_ports[0]))
 
-uint16_t gpio_pins[] = {
+uint16_t matrix_pins[] = {
     GPIO_PIN_10, GPIO_PIN_9, GPIO_PIN_8, GPIO_PIN_15,
     GPIO_PIN_14, GPIO_PIN_13, GPIO_PIN_12, GPIO_PIN_11,
     GPIO_PIN_10, GPIO_PIN_2, GPIO_PIN_1, GPIO_PIN_0,
     GPIO_PIN_7, GPIO_PIN_6, GPIO_PIN_5, GPIO_PIN_4};
-#define NUM_PINS (sizeof(gpio_pins) / sizeof(gpio_pins[0]))
+#define NUM_MATRIX_PINS (sizeof(matrix_pins) / sizeof(matrix_pins[0]))
 
-bool heart_matrix[NUM_PINS - 1][NUM_PINS] = {
-    {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
-    {0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0},
-    {0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-    {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-    {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-    {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}};
-
-bool smile_matrix[NUM_PINS - 1][NUM_PINS] = {
-    {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-    {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-    {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-    {0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0},
-    {1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1},
-    {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1},
-    {1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1},
-    {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-    {0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0},
-    {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-    {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-    {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0}};
-
-bool menu_matrix[NUM_PINS - 1][NUM_PINS] = {
+bool menu_matrix[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {
     {1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1},
     {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
     {1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1},
@@ -76,12 +44,17 @@ bool menu_matrix[NUM_PINS - 1][NUM_PINS] = {
     {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
     {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1}};
 
+bool screen[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {0};
+
 // Button variables (External high pull-up)
 // UP, DOWN, LEFT, RIGHT, A, B, C, D
 static GPIO_TypeDef *button_ports[8] = {GPIOB, GPIOB, GPIOB, GPIOB, GPIOA, GPIOA, GPIOA, GPIOA};
 static uint16_t button_pins[8] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_3, GPIO_PIN_6, GPIO_PIN_2, GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_3};
-#define NUM_BUTTONS (sizeof(button_pins) / sizeof(button_pins[0]))
-static bool button_flags[] = {0, 0, 0, 0, 0, 0, 0, 0};
+#define NUM_BUTTON_PORTS (sizeof(button_ports) / sizeof(button_ports[0]))
+#define NUM_BUTTON_PINS (sizeof(button_pins) / sizeof(button_pins[0]))
+
+// Mode variables
+int mode = 0; // 0 = Main Menu, 1 = Snake, 2 = Ping Pong, 3 = Flappy Bird, 4 = Tetris
 
 /**
  * @brief  The application entry point.
@@ -96,53 +69,90 @@ int main(void)
   MX_USB_PCD_Init();
 
   HAL_TIM_Base_Start(&htim1);
-  Charlieplex_Clear(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS);
+  Charlieplex_Clear(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS);
 
   while (1)
   {
-    unsigned long time_now = HAL_GetTick();
-    while (HAL_GetTick() - time_now < 2000)
+    uint16_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, GPIO_PIN_RESET);
+    if (button_mask & 0x01 && mode == 0)
     {
-      Charlieplex_Display(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, heart_matrix, 30);
+      mode = 1;
+    }
+    else if (button_mask & 0x02 && mode == 0)
+    {
+      mode = 2;
+    }
+    else if (button_mask & 0x04 && mode == 0)
+    {
+      mode = 3;
+    }
+    else if (button_mask & 0x08 && mode == 0)
+    {
+      mode = 4;
     }
 
-    time_now = HAL_GetTick();
-    while (HAL_GetTick() - time_now < 2000)
+    switch (mode)
     {
-      Charlieplex_Display(gpio_ports, NUM_PORTS, gpio_pins, NUM_PINS, smile_matrix, 30);
-    }
-
-    for (int i = 0; i < 8; i++)
-    {
-      if (HAL_GPIO_ReadPin(button_ports[i], button_pins[i]) == 0 && button_flags[i] == 0)
+    case 0:
+      for (unsigned int i = 0; i < NUM_MATRIX_PINS - 1; i++)
       {
-        button_flags[i] = 1;
-        switch (i)
+        for (unsigned int j = 0; j < NUM_MATRIX_PINS; j++)
         {
-        case 0:
-          break;
-        case 1:
-          break;
-        case 2:
-          break;
-        case 3:
-          break;
-        case 4:
-          break;
-        case 5:
-          break;
-        case 6:
-          break;
-        case 7:
-          break;
+          screen[i][j] = menu_matrix[i][j];
         }
       }
-      else if (HAL_GPIO_ReadPin(button_ports[i], button_pins[i]) == 1 && button_flags[i] == 1)
-      {
-        button_flags[i] = 0;
-      }
+      break;
+    case 1:
+      Play_Snake(NUM_MATRIX_PINS, NUM_MATRIX_PINS - 1, screen, button_mask);
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+    case 4:
+      break;
+    }
+
+    Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, 30);
+  }
+}
+
+/**
+ * @brief Polls buttons and returns a bitmask of newly pressed buttons.
+ *
+ * Detects edge-triggered presses for up to 8 buttons. Returns a bitmask where bit i is set
+ * if button i was just pressed (transitioned to PressState).
+ *
+ * @param ButtonPorts Array of GPIO port pointers.
+ * @param NumPorts Number of GPIO ports (must equal NumPins, max 16).
+ * @param ButtonPins Array of GPIO pin numbers.
+ * @param NumPins Number of pins (must equal NumPorts, max 16).
+ * @param PressState GPIO state considered as "pressed" (e.g. GPIO_PIN_RESET).
+ *
+ * @retval 16-bit bitmask of newly pressed buttons, or 0 on input error.
+ */
+uint16_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, bool PressState)
+{
+  if (NumPorts != NumPins || NumPorts > 16 || NumPins > 16)
+  {
+    return 0;
+  }
+
+  uint16_t return_val = 0;
+  static bool button_flags[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  for (int i = 0; i < NumPins; i++)
+  {
+    if (HAL_GPIO_ReadPin(ButtonPorts[i], ButtonPins[i]) == PressState && button_flags[i] == 0)
+    {
+      button_flags[i] = 1;
+      return_val |= (1 << i);
+    }
+    else if (HAL_GPIO_ReadPin(ButtonPorts[i], ButtonPins[i]) == PressState && button_flags[i] == 1)
+    {
+      button_flags[i] = 0;
     }
   }
+  return return_val;
 }
 
 /**
@@ -262,15 +272,15 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
-  for (int i = 0; i < (int)NUM_PINS; i++)
+  for (int i = 0; i < (int)NUM_MATRIX_PINS; i++)
   {
-    GPIO_InitStruct.Pin = gpio_pins[i];
+    GPIO_InitStruct.Pin = matrix_pins[i];
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(gpio_ports[i], &GPIO_InitStruct);
+    HAL_GPIO_Init(matrix_ports[i], &GPIO_InitStruct);
   }
 
-  for (int i = 0; i < (int)NUM_BUTTONS; i++)
+  for (int i = 0; i < (int)NUM_BUTTON_PINS; i++)
   {
     GPIO_InitStruct.Pin = button_pins[i];
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
