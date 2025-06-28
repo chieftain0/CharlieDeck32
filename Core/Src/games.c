@@ -69,3 +69,59 @@ void Play_Pong(int screen_width, int screen_height, bool matrix[screen_height][s
         }
     }
 }
+
+int Play_FlappyBird(int screen_width, int screen_height, bool matrix[screen_height][screen_width], uint16_t button_mask, uint16_t random_number, uint16_t speed_ms)
+{
+    static unsigned long time_now = 0;
+    static int count = 0;
+
+    static int bird_yx[2] = {7, 2};
+
+    if (HAL_GetTick() - time_now > speed_ms)
+    {
+        time_now = HAL_GetTick();
+
+        // Remove the bird for now
+        matrix[bird_yx[0]][bird_yx[1]] = 0;
+
+        // Shift the entire screen to the left
+        for (int i = 0; i < screen_height; i++)
+        {
+            for (int j = 0; j < screen_width - 1; j++)
+            {
+                matrix[i][j] = matrix[i][j + 1];
+            }
+        }
+        for (int i = 0; i < screen_height; i++)
+        {
+            matrix[i][screen_width - 1] = 0;
+        }
+        count++;
+
+        if (count >= 5)
+        {
+            // Make a new column
+            int random_height = random_number % 11 + 1;
+            for (int i = 0; i < random_height; i++)
+            {
+                matrix[screen_height - i - 1][screen_width - 1] = 1;
+            }
+            for (int i = 0; i < screen_height - random_height - 3; i++)
+            {
+                matrix[i][screen_width - 1] = 1;
+            }
+            count = 0;
+        }
+
+        if (matrix[bird_yx[0]][bird_yx[1]] == 1)
+        {
+            // Collision detected
+            return 1;
+        }
+
+        // Apply the bird
+        matrix[bird_yx[0]][bird_yx[1]] = 1;
+    }
+
+    return 0;
+}

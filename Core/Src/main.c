@@ -1,10 +1,12 @@
 #include "main.h"
 
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim2;
 PCD_HandleTypeDef hpcd_USB_FS;
 
 void SystemClock_Config(void);
 static void MX_TIM1_Init(void);
+static void MX_TIM2_Init(void);
 static void MX_GPIO_Init(void);
 static void MX_USB_PCD_Init(void);
 
@@ -54,7 +56,7 @@ static uint16_t button_pins[8] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_3, GPIO_PIN_6
 #define NUM_BUTTON_PINS (sizeof(button_pins) / sizeof(button_pins[0]))
 
 // Mode variables
-int mode = 0; // 0 = Main Menu, 1 = Snake, 2 = Ping Pong, 3 = Flappy Bird, 4 = Tetris
+int mode = 3; // 0 = Main Menu, 1 = Snake, 2 = Ping Pong, 3 = Flappy Bird, 4 = Tetris
 
 /**
  * @brief  The application entry point.
@@ -65,11 +67,15 @@ int main(void)
   HAL_Init();
   SystemClock_Config();
   MX_TIM1_Init();
+  MX_TIM2_Init();
   MX_GPIO_Init();
   MX_USB_PCD_Init();
 
   HAL_TIM_Base_Start(&htim1);
+  HAL_TIM_Base_Start(&htim2);
   Charlieplex_Clear(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS);
+
+  srand(__HAL_TIM_GET_COUNTER(&htim2)); // Temporary seed
 
   static unsigned long time_now = 0;
   time_now = HAL_GetTick();
@@ -77,22 +83,23 @@ int main(void)
   while (1)
   {
     uint16_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, GPIO_PIN_RESET);
-    if (button_mask & 0x01 && mode == 0)
-    {
-      mode = 1;
-    }
-    else if (button_mask & 0x02 && mode == 0)
-    {
-      mode = 2;
-    }
-    else if (button_mask & 0x04 && mode == 0)
-    {
-      mode = 3;
-    }
-    else if (button_mask & 0x08 && mode == 0)
-    {
-      mode = 4;
-    }
+    // if (button_mask & 0x01 && mode == 0)
+    // {
+    //   mode = 1;
+    // }
+    // else if (button_mask & 0x02 && mode == 0)
+    // {
+    //   mode = 2;
+    // }
+    // else if (button_mask & 0x04 && mode == 0)
+    // {
+    //   mode = 3;
+    //   srand(__HAL_TIM_GET_COUNTER(&htim2)); // Seed for the flappy bird
+    // }
+    // else if (button_mask & 0x08 && mode == 0)
+    // {
+    //   mode = 4;
+    // }
 
     switch (mode)
     {
@@ -122,12 +129,16 @@ int main(void)
       }
       break;
     case 3:
+      if (Play_FlappyBird(NUM_MATRIX_PINS, NUM_MATRIX_PINS - 1, screen, button_mask, rand(), 200) == 1)
+      {
+        mode = 0;
+      }
       break;
     case 4:
       break;
     }
 
-    Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, 30);
+    Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, 50);
   }
 }
 
@@ -238,6 +249,41 @@ static void MX_TIM1_Init(void)
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+ * @brief TIM2 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_TIM2_Init(void)
+{
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 0;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 65535; // max 16-bit
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
