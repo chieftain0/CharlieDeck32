@@ -134,7 +134,7 @@ int main(void)
 /**
  * @brief Polls buttons and returns a bitmask of newly pressed buttons.
  *
- * Detects edge-triggered presses for up to 8 buttons. Returns a bitmask where bit i is set
+ * Detects edge-triggered presses for up to 16 buttons. Returns a bitmask where bit i is set
  * if button i was just pressed (transitioned to PressState).
  *
  * @param ButtonPorts Array of GPIO port pointers.
