@@ -72,6 +72,8 @@ void Play_Pong(int screen_width, int screen_height, bool matrix[screen_height][s
 
 int Play_FlappyBird(int screen_width, int screen_height, bool matrix[screen_height][screen_width], uint16_t button_mask, uint16_t random_number, uint16_t speed_ms)
 {
+#define GRAVITY 0.5
+#define JUMP 1
     static unsigned long time_now = 0;
     static int count = 0;
 
@@ -111,6 +113,30 @@ int Play_FlappyBird(int screen_width, int screen_height, bool matrix[screen_heig
                 matrix[i][screen_width - 1] = 1;
             }
             count = 0;
+        }
+
+        // Jump the bird
+        static double velocity = 0;
+        if (bird_yx[0] > 0) // If the bird is not on the ground
+        {
+            velocity = velocity - GRAVITY;
+        }
+        else
+        {
+            velocity = 0;
+        }
+        if ((button_mask & 0x80) || (button_mask & 0x8)) // If the button is pressed
+        {
+            velocity = velocity + JUMP;
+        }
+        bird_yx[0] = bird_yx[0] - velocity; // Subtract velocity since indexes are reversed
+        if (bird_yx[0] > screen_height - 1)
+        {
+            bird_yx[0] = screen_height - 1;
+        }
+        if (bird_yx[0] < 0)
+        {
+            bird_yx[0] = 0;
         }
 
         if (matrix[bird_yx[0]][bird_yx[1]] == 1)

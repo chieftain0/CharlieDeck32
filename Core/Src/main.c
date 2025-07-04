@@ -1,5 +1,12 @@
 #include "main.h"
 
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include "stm32f1xx_hal.h"
+#include "charlieplex.h"
+#include "games.h"
+
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 PCD_HandleTypeDef hpcd_USB_FS;
@@ -172,7 +179,7 @@ uint16_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *Button
       button_flags[i] = 1;
       return_val |= (1 << i);
     }
-    else if (HAL_GPIO_ReadPin(ButtonPorts[i], ButtonPins[i]) == PressState && button_flags[i] == 1)
+    else if (HAL_GPIO_ReadPin(ButtonPorts[i], ButtonPins[i]) == !PressState && button_flags[i] == 1)
     {
       button_flags[i] = 0;
     }
