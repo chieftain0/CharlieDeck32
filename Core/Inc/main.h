@@ -9,7 +9,6 @@ extern "C"
 
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdbool.h>
 #include "stm32f1xx_hal.h"
 #include "charlieplex.h"
 #include "games.h"

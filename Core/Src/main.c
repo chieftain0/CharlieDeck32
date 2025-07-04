@@ -1,12 +1,5 @@
 #include "main.h"
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include "stm32f1xx_hal.h"
-#include "charlieplex.h"
-#include "games.h"
-
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 PCD_HandleTypeDef hpcd_USB_FS;
@@ -17,7 +10,7 @@ static void MX_TIM2_Init(void);
 static void MX_GPIO_Init(void);
 static void MX_USB_PCD_Init(void);
 
-uint16_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, bool PressState);
+uint16_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, uint8_t PressState);
 
 // USB variables
 GPIO_TypeDef *usb_enum_pin_port = GPIOA;
@@ -36,7 +29,7 @@ uint16_t matrix_pins[] = {
     GPIO_PIN_7, GPIO_PIN_6, GPIO_PIN_5, GPIO_PIN_4};
 #define NUM_MATRIX_PINS (sizeof(matrix_pins) / sizeof(matrix_pins[0]))
 
-bool menu_matrix[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {
+uint8_t menu_matrix[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {
     {1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1},
     {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
     {1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1},
@@ -53,7 +46,24 @@ bool menu_matrix[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {
     {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
     {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1}};
 
-bool screen[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {0};
+uint8_t score_matrix[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0},
+    {0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0},
+    {0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0},
+    {0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0},
+    {0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1},
+    {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+    {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+    {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+    {0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+
+uint8_t screen[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {0};
 
 // Button variables (External high pull-up)
 // UP, DOWN, LEFT, RIGHT, A, B, C, D
@@ -63,7 +73,7 @@ static uint16_t button_pins[8] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_3, GPIO_PIN_6
 #define NUM_BUTTON_PINS (sizeof(button_pins) / sizeof(button_pins[0]))
 
 // Mode variables
-int mode = 3; // 0 = Main Menu, 1 = Snake, 2 = Ping Pong, 3 = Flappy Bird, 4 = Tetris
+int mode = 3; // 0 = Main Menu, 1 = Snake, 2 = Ping Pong, 3 = Flappy Bird, 4 = Tetris, 5 = Show Score
 
 /**
  * @brief  The application entry point.
@@ -86,6 +96,8 @@ int main(void)
 
   static unsigned long time_now = 0;
   time_now = HAL_GetTick();
+
+  int score = 0;
 
   while (1)
   {
@@ -113,6 +125,7 @@ int main(void)
     switch (mode)
     {
     case 0:
+    {
       for (unsigned int i = 0; i < NUM_MATRIX_PINS - 1; i++)
       {
         for (unsigned int j = 0; j < NUM_MATRIX_PINS; j++)
@@ -121,7 +134,9 @@ int main(void)
         }
       }
       break;
+    }
     case 1:
+    {
       Play_Snake(NUM_MATRIX_PINS, NUM_MATRIX_PINS - 1, screen, button_mask);
       if (HAL_GetTick() - time_now > 2000)
       {
@@ -129,7 +144,9 @@ int main(void)
         time_now = HAL_GetTick();
       }
       break;
+    }
     case 2:
+    {
       Play_Pong(NUM_MATRIX_PINS, NUM_MATRIX_PINS - 1, screen, button_mask);
       if (HAL_GetTick() - time_now > 2000)
       {
@@ -137,16 +154,32 @@ int main(void)
         time_now = HAL_GetTick();
       }
       break;
+    }
     case 3:
-      if (Play_FlappyBird(NUM_MATRIX_PINS, NUM_MATRIX_PINS - 1, screen, button_mask, rand(), 200) == 1)
+    {
+      score = Play_FlappyBird(NUM_MATRIX_PINS, NUM_MATRIX_PINS - 1, screen, button_mask, rand(), HAL_GetTick());
+      if (score != -1)
       {
-        mode = 0;
+        mode = 5;
       }
       break;
+    }
     case 4:
+    {
       break;
     }
-
+    case 5:
+    {
+      unsigned long time_now = HAL_GetTick();
+      while (HAL_GetTick() - time_now < 3000)
+      {
+        Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, score_matrix, 50);
+      }
+      score = 0;
+      mode = 0;
+      break;
+    }
+    }
     Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, 50);
   }
 }
@@ -165,7 +198,7 @@ int main(void)
  *
  * @retval 16-bit bitmask of newly pressed buttons, or 0 on input error.
  */
-uint16_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, bool PressState)
+uint16_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, uint8_t PressState)
 {
   if (NumPorts != NumPins || NumPorts > 16 || NumPins > 16)
   {
@@ -173,7 +206,7 @@ uint16_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *Button
   }
 
   uint16_t return_val = 0;
-  static bool button_flags[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  static uint8_t button_flags[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   for (int i = 0; i < NumPins; i++)
   {
     if (HAL_GPIO_ReadPin(ButtonPorts[i], ButtonPins[i]) == PressState && button_flags[i] == 0)

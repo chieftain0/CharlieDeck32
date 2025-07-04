@@ -1,6 +1,6 @@
 #include "games.h"
 
-bool heart_matrix[15][16] = {
+uint8_t heart_matrix[15][16] = {
     {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
     {0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0},
     {0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0},
@@ -17,7 +17,7 @@ bool heart_matrix[15][16] = {
     {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}};
 
-bool smile_matrix[15][16] = {
+uint8_t smile_matrix[15][16] = {
     {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
     {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
     {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
@@ -38,10 +38,10 @@ bool smile_matrix[15][16] = {
  * @brief Plays the snake game (WORK IN PROGRESS, OUTPUTS A HEART)
  * @param[in] screen_width Screen width
  * @param[in] screen_height Screen height
- * @param[out] matrix 2D array of bools representing the screen
+ * @param[out] matrix 2D array of uint8_ts representing the screen
  * @param[in] button_mask Button mask, unused in this function
  */
-void Play_Snake(int screen_width, int screen_height, bool matrix[screen_height][screen_width], uint16_t button_mask)
+void Play_Snake(int screen_width, int screen_height, uint8_t matrix[screen_height][screen_width], uint16_t button_mask)
 {
     for (int i = 0; i < screen_height; i++)
     {
@@ -56,10 +56,10 @@ void Play_Snake(int screen_width, int screen_height, bool matrix[screen_height][
  * @brief Plays the ping pong game (WORK IN PROGRESS, OUTPUTS A SMILE)
  * @param[in] screen_width Screen width
  * @param[in] screen_height Screen height
- * @param[out] matrix 2D array of bools representing the screen
+ * @param[out] matrix 2D array of uint8_ts representing the screen
  * @param[in] button_mask Button mask, unused in this function
  */
-void Play_Pong(int screen_width, int screen_height, bool matrix[screen_height][screen_width], uint16_t button_mask)
+void Play_Pong(int screen_width, int screen_height, uint8_t matrix[screen_height][screen_width], uint16_t button_mask)
 {
     for (int i = 0; i < screen_height; i++)
     {
@@ -70,18 +70,20 @@ void Play_Pong(int screen_width, int screen_height, bool matrix[screen_height][s
     }
 }
 
-int Play_FlappyBird(int screen_width, int screen_height, bool matrix[screen_height][screen_width], uint16_t button_mask, uint16_t random_number, uint16_t speed_ms)
+int Play_FlappyBird(int screen_width, int screen_height, uint8_t matrix[screen_height][screen_width], uint16_t button_mask, uint16_t random_number, uint32_t time_now)
 {
+#define SPEED 200
 #define GRAVITY 0.5
 #define JUMP 1
-    static unsigned long time_now = 0;
+    static unsigned long prev_time = 0;
     static int count = 0;
+    static int score = -2;
 
     static int bird_yx[2] = {7, 2};
 
-    if (HAL_GetTick() - time_now > speed_ms)
+    if (time_now - prev_time > SPEED)
     {
-        time_now = HAL_GetTick();
+        prev_time = time_now;
 
         // Remove the bird for now
         matrix[bird_yx[0]][bird_yx[1]] = 0;
@@ -113,13 +115,14 @@ int Play_FlappyBird(int screen_width, int screen_height, bool matrix[screen_heig
                 matrix[i][screen_width - 1] = 1;
             }
             count = 0;
+            score++;
         }
 
         // Jump the bird
         static double velocity = 0;
         if (bird_yx[0] > 0) // If the bird is not on the ground
         {
-            velocity = velocity - GRAVITY;
+            velocity -= GRAVITY;
         }
         else
         {
@@ -127,9 +130,9 @@ int Play_FlappyBird(int screen_width, int screen_height, bool matrix[screen_heig
         }
         if ((button_mask & 0x80) || (button_mask & 0x8)) // If the button is pressed
         {
-            velocity = velocity + JUMP;
+            velocity += JUMP;
         }
-        bird_yx[0] = bird_yx[0] - velocity; // Subtract velocity since indexes are reversed
+        bird_yx[0] -= velocity; // Subtract velocity since indexes are reversed
         if (bird_yx[0] > screen_height - 1)
         {
             bird_yx[0] = screen_height - 1;
@@ -142,12 +145,16 @@ int Play_FlappyBird(int screen_width, int screen_height, bool matrix[screen_heig
         if (matrix[bird_yx[0]][bird_yx[1]] == 1)
         {
             // Collision detected
-            return 1;
+            return score;
         }
 
         // Apply the bird
         matrix[bird_yx[0]][bird_yx[1]] = 1;
     }
 
-    return 0;
+    return -1;
+}
+
+void Play_Tetris(int screen_width, int screen_height, uint8_t matrix[screen_height][screen_width], uint16_t button_mask)
+{
 }
