@@ -264,3 +264,43 @@ void ScoreMatrix(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t score)
         }
     }
 }
+
+/**
+ * @brief Updates the given matrix with the heart pattern.
+ *
+ * This function copies the predefined heart pattern from 'heart_matrix'
+ * into the given matrix. The matrix represents the LED screen, and this
+ * function sets it to display a heart.
+ *
+ * @param matrix The screen matrix (15x16) to be updated with the heart pattern.
+ */
+void HeartMatrix(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
+{
+    for (int i = 0; i < SCREEN_HEIGHT; i++)
+    {
+        for (int j = 0; j < SCREEN_WIDTH; j++)
+        {
+            matrix[i][j] = heart_matrix[i][j];
+        }
+    }
+}
+
+/**
+ * @brief Updates the given matrix with the smile pattern.
+ *
+ * This function copies the predefined smile pattern from 'smile_matrix'
+ * into the given matrix. The matrix represents the LED screen, and this
+ * function sets it to display a smile.
+ *
+ * @param matrix The screen matrix (15x16) to be updated with the smile pattern.
+ */
+void SmileMatrix(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
+{
+    for (int i = 0; i < SCREEN_HEIGHT; i++)
+    {
+        for (int j = 0; j < SCREEN_WIDTH; j++)
+        {
+            matrix[i][j] = smile_matrix[i][j];
+        }
+    }
+}
