@@ -1,5 +1,4 @@
 #include "charlieplex.h"
-#include "main.h" // Needed for HAL
 
 /**
  * @brief Sets all pins of the charlieplexed array to input mode without pullup/pulldown.
