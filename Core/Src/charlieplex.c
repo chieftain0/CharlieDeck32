@@ -37,15 +37,15 @@ void Charlieplex_Clear(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int 
  * @param num_pins Number of pin numbers in the pins array.
  * @param x (Horizontal) Index representing the first pin controlling the LED.
  * @param y (Vertical) Index representing the second pin controlling the LED.
- * @param state Boolean value indicating the desired state of the LED:
- *              - true: Turn the LED on.
- *              - false: Turn the LED off.
+ * @param state uint8_t value indicating the desired state of the LED:
+ *              - 1: Turn the LED on.
+ *              - 0: Turn the LED off.
  *
  * @note The indexes start at 0. Ensure that the number of ports matches the number of pins.
  *       This function will configure the pins as outputs to set the LED state to ON,
  *       and as inputs to set the LED state to OFF.
  */
-void Charlieplex_SetLED(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int num_pins, int x, int y, bool state)
+void Charlieplex_SetLED(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int num_pins, int x, int y, uint8_t state)
 {
     if (num_ports != num_pins)
     {
@@ -89,13 +89,13 @@ void Charlieplex_SetLED(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int
 }
 
 /**
- * @brief Display a matrix of booleans on a Charlieplexed LED array.
+ * @brief Display a matrix on a Charlieplexed LED array.
  *
  * @param ports Array of GPIO ports associated with each pin.
  * @param num_ports Number of GPIO ports in the ports array.
  * @param pins Array of pin numbers corresponding to each port.
  * @param num_pins Number of pin numbers in the pins array.
- * @param matrix 2D array of boolean values representing the desired state of each LED in the array.
+ * @param matrix 2D array of uint8_t values representing the desired state of each LED in the array.
  * @param pixel_delay Time in milliseconds to delay between setting each LED state.
  *
  * @note The matrix is indexed as follows: matrix[row][column]. The indexes start at 0.
@@ -104,7 +104,7 @@ void Charlieplex_SetLED(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int
  *
  * @warning This function is blocking. Use with caution.
  */
-void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int num_pins, bool matrix[num_pins - 1][num_pins], unsigned long pixel_delay)
+void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int num_pins, uint8_t matrix[num_pins - 1][num_pins], unsigned long pixel_delay)
 {
     for (int i = 0; i < num_pins - 1; i++)
     {
