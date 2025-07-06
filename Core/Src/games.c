@@ -173,7 +173,7 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button
         {
             velocity = 0;
         }
-        if ((button_mask & 0x80) || (button_mask & 0x8)) // If the button is pressed
+        if (button_mask > 0) // If any button is pressed
         {
             velocity += JUMP;
         }
