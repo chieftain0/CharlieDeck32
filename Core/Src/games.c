@@ -1,5 +1,52 @@
 #include "games.h"
 
+#define N0 {{1, 1, 1}, {1, 0, 1}, {1, 0, 1}, {1, 0, 1}, {1, 1, 1}}
+#define N1 {{0, 0, 1}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}}
+#define N2 {{1, 1, 1}, {0, 0, 1}, {1, 1, 1}, {1, 0, 0}, {1, 1, 1}}
+#define N3 {{1, 1, 1}, {0, 0, 1}, {1, 1, 1}, {0, 0, 1}, {1, 1, 1}}
+#define N4 {{1, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 0, 1}, {0, 0, 1}}
+#define N5 {{1, 1, 1}, {1, 0, 0}, {1, 1, 1}, {0, 0, 1}, {1, 1, 1}}
+#define N6 {{1, 1, 1}, {1, 0, 0}, {1, 1, 1}, {1, 0, 1}, {1, 1, 1}}
+#define N7 {{1, 1, 1}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}}
+#define N8 {{1, 1, 1}, {1, 0, 1}, {1, 1, 1}, {1, 0, 1}, {1, 1, 1}}
+#define N9 {{1, 1, 1}, {1, 0, 1}, {1, 1, 1}, {0, 0, 1}, {1, 1, 1}}
+
+uint8_t digit_matrices[10][5][3] = {N0, N1, N2, N3, N4, N5, N6, N7, N8, N9};
+
+uint8_t menu_matrix[15][16] = {
+    {1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1},
+    {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
+    {1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1},
+    {1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1},
+    {0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0},
+    {0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0},
+    {1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
+    {0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0},
+    {0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0},
+    {0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0},
+    {0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0},
+    {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
+    {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1},
+    {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
+    {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1}};
+
+uint8_t score_matrix[15][16] = {
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0},
+    {0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0},
+    {0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0},
+    {0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0},
+    {0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1},
+    {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+    {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+    {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+    {0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+
 uint8_t heart_matrix[15][16] = {
     {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
     {0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0},
@@ -34,50 +81,48 @@ uint8_t smile_matrix[15][16] = {
     {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
     {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0}};
 
-/**
- * @brief Plays the snake game (WORK IN PROGRESS, OUTPUTS A HEART)
- * @param[in] screen_width Screen width
- * @param[in] screen_height Screen height
- * @param[out] matrix 2D array of uint8_ts representing the screen
- * @param[in] button_mask Button mask, unused in this function
- */
-void Play_Snake(int screen_width, int screen_height, uint8_t matrix[screen_height][screen_width], uint16_t button_mask)
+void Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button_mask)
 {
-    for (int i = 0; i < screen_height; i++)
+    for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
-        for (int j = 0; j < screen_width; j++)
+        for (int j = 0; j < SCREEN_WIDTH; j++)
         {
             matrix[i][j] = heart_matrix[i][j];
         }
     }
 }
 
-/**
- * @brief Plays the ping pong game (WORK IN PROGRESS, OUTPUTS A SMILE)
- * @param[in] screen_width Screen width
- * @param[in] screen_height Screen height
- * @param[out] matrix 2D array of uint8_ts representing the screen
- * @param[in] button_mask Button mask, unused in this function
- */
-void Play_Pong(int screen_width, int screen_height, uint8_t matrix[screen_height][screen_width], uint16_t button_mask)
+void Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button_mask)
 {
-    for (int i = 0; i < screen_height; i++)
+    for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
-        for (int j = 0; j < screen_width; j++)
+        for (int j = 0; j < SCREEN_WIDTH; j++)
         {
             matrix[i][j] = smile_matrix[i][j];
         }
     }
 }
 
-int Play_FlappyBird(int screen_width, int screen_height, uint8_t matrix[screen_height][screen_width], uint16_t button_mask, uint16_t random_number, uint32_t time_now)
+/**
+ * @brief Flappy Bird game
+ *
+ * This function implements the game of Flappy Bird.
+ *
+ * @param matrix The screen matrix (15x16)
+ * @param button_mask The mask of buttons pressed
+ * @param random_number A random number to generate the next column of the game
+ * @param time_now The current time
+ *
+ * @return -4 if the game is still running, otherwise the score
+ */
+int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button_mask, uint16_t random_number, uint32_t time_now)
 {
 #define SPEED 200
 #define GRAVITY 0.5
 #define JUMP 1
     static unsigned long prev_time = 0;
     static int count = 0;
-    static int score = -2;
+    static int score = -3;
 
     static int bird_yx[2] = {7, 2};
 
@@ -89,16 +134,16 @@ int Play_FlappyBird(int screen_width, int screen_height, uint8_t matrix[screen_h
         matrix[bird_yx[0]][bird_yx[1]] = 0;
 
         // Shift the entire screen to the left
-        for (int i = 0; i < screen_height; i++)
+        for (int i = 0; i < SCREEN_HEIGHT; i++)
         {
-            for (int j = 0; j < screen_width - 1; j++)
+            for (int j = 0; j < SCREEN_WIDTH - 1; j++)
             {
                 matrix[i][j] = matrix[i][j + 1];
             }
         }
-        for (int i = 0; i < screen_height; i++)
+        for (int i = 0; i < SCREEN_HEIGHT; i++)
         {
-            matrix[i][screen_width - 1] = 0;
+            matrix[i][SCREEN_WIDTH - 1] = 0;
         }
         count++;
 
@@ -108,11 +153,11 @@ int Play_FlappyBird(int screen_width, int screen_height, uint8_t matrix[screen_h
             int random_height = random_number % 11 + 1;
             for (int i = 0; i < random_height; i++)
             {
-                matrix[screen_height - i - 1][screen_width - 1] = 1;
+                matrix[SCREEN_HEIGHT - i - 1][SCREEN_WIDTH - 1] = 1;
             }
-            for (int i = 0; i < screen_height - random_height - 3; i++)
+            for (int i = 0; i < SCREEN_HEIGHT - random_height - 3; i++)
             {
-                matrix[i][screen_width - 1] = 1;
+                matrix[i][SCREEN_WIDTH - 1] = 1;
             }
             count = 0;
             score++;
@@ -133,9 +178,9 @@ int Play_FlappyBird(int screen_width, int screen_height, uint8_t matrix[screen_h
             velocity += JUMP;
         }
         bird_yx[0] -= velocity; // Subtract velocity since indexes are reversed
-        if (bird_yx[0] > screen_height - 1)
+        if (bird_yx[0] > SCREEN_HEIGHT - 1)
         {
-            bird_yx[0] = screen_height - 1;
+            bird_yx[0] = SCREEN_HEIGHT - 1;
         }
         if (bird_yx[0] < 0)
         {
@@ -152,9 +197,70 @@ int Play_FlappyBird(int screen_width, int screen_height, uint8_t matrix[screen_h
         matrix[bird_yx[0]][bird_yx[1]] = 1;
     }
 
-    return -1;
+    return -4;
 }
 
-void Play_Tetris(int screen_width, int screen_height, uint8_t matrix[screen_height][screen_width], uint16_t button_mask)
+void Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button_mask)
 {
+}
+
+/**
+ * @brief Updates the given matrix with the main menu pattern.
+ *
+ * This function copies the predefined main menu pattern from 'menu_matrix'
+ * into the given matrix. The matrix represents the LED screen, and this
+ * function sets it to display the main menu.
+ *
+ * @param matrix The screen matrix (15x16) to be updated with the main menu pattern.
+ */
+void MainMenuMatrix(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
+{
+    for (int i = 0; i < SCREEN_HEIGHT; i++)
+    {
+        for (int j = 0; j < SCREEN_WIDTH; j++)
+        {
+            matrix[i][j] = menu_matrix[i][j];
+        }
+    }
+}
+
+/**
+ * @brief Updates the given matrix with the score pattern.
+ *
+ * This function copies the predefined score pattern from 'score_matrix'
+ * into the given matrix. The matrix represents the LED screen, and this
+ * function sets it to display the score.
+ *
+ * @param matrix The screen matrix (15x16) to be updated with the score pattern.
+ * @param score  The score to be displayed.
+ */
+void ScoreMatrix(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t score)
+{
+    for (int i = 0; i < SCREEN_HEIGHT; i++)
+    {
+        for (int j = 0; j < SCREEN_WIDTH; j++)
+        {
+            matrix[i][j] = score_matrix[i][j];
+        }
+    }
+
+    uint8_t digits[4] = {(score / 1000) % 10, (score / 100) % 10, (score / 10) % 10, score % 10};
+    for (int dig = 0; dig < 4; dig++)
+    {
+        for (int i = 9; i < 14; i++)
+        {
+            for (int j = dig * 4 + 1; j < dig * 4 + 4; j++)
+            {
+                matrix[i][j] = digit_matrices[digits[dig]][i - 9][j - (dig * 4 + 1)];
+            }
+        }
+    }
+
+    for (int i = (SCREEN_HEIGHT / 2) + 7; i < SCREEN_HEIGHT; i++)
+    {
+        for (int j = 0; j < SCREEN_WIDTH; j++)
+        {
+            matrix[i][j] = score_matrix[i][j];
+        }
+    }
 }

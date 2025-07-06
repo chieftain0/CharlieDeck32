@@ -29,40 +29,6 @@ uint16_t matrix_pins[] = {
     GPIO_PIN_7, GPIO_PIN_6, GPIO_PIN_5, GPIO_PIN_4};
 #define NUM_MATRIX_PINS (sizeof(matrix_pins) / sizeof(matrix_pins[0]))
 
-uint8_t menu_matrix[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {
-    {1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1},
-    {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-    {1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1},
-    {1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1},
-    {0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0},
-    {0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0},
-    {1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
-    {0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0},
-    {0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0},
-    {0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0},
-    {0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0},
-    {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-    {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1},
-    {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-    {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1}};
-
-uint8_t score_matrix[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0},
-    {0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0},
-    {0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0},
-    {0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0},
-    {0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1},
-    {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-    {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-    {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-    {0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-
 uint8_t screen[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {0};
 
 // Button variables (External high pull-up)
@@ -125,60 +91,37 @@ int main(void)
     switch (mode)
     {
     case 0:
-    {
-      for (unsigned int i = 0; i < NUM_MATRIX_PINS - 1; i++)
-      {
-        for (unsigned int j = 0; j < NUM_MATRIX_PINS; j++)
-        {
-          screen[i][j] = menu_matrix[i][j];
-        }
-      }
+      MainMenuMatrix(screen);
       break;
-    }
     case 1:
-    {
-      Play_Snake(NUM_MATRIX_PINS, NUM_MATRIX_PINS - 1, screen, button_mask);
-      if (HAL_GetTick() - time_now > 2000)
-      {
-        mode = 2;
-        time_now = HAL_GetTick();
-      }
+      Play_Snake(screen, button_mask);
+
       break;
-    }
     case 2:
-    {
-      Play_Pong(NUM_MATRIX_PINS, NUM_MATRIX_PINS - 1, screen, button_mask);
-      if (HAL_GetTick() - time_now > 2000)
-      {
-        mode = 1;
-        time_now = HAL_GetTick();
-      }
+      Play_Pong(screen, button_mask);
+
       break;
-    }
     case 3:
-    {
-      score = Play_FlappyBird(NUM_MATRIX_PINS, NUM_MATRIX_PINS - 1, screen, button_mask, rand(), HAL_GetTick());
-      if (score != -1)
+      score = Play_FlappyBird(screen, button_mask, rand(), HAL_GetTick());
+      if (score != -4)
       {
         mode = 5;
+        time_now = HAL_GetTick();
       }
       break;
-    }
     case 4:
-    {
+      Play_Tetris(screen, button_mask);
       break;
-    }
     case 5:
-    {
-      unsigned long time_now = HAL_GetTick();
-      while (HAL_GetTick() - time_now < 3000)
+      if (HAL_GetTick() - time_now < 3000)
       {
-        Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, score_matrix, 50);
+        ScoreMatrix(screen, score);
       }
-      score = 0;
-      mode = 0;
+      else
+      {
+        NVIC_SystemReset();
+      }
       break;
-    }
     }
     Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, 50);
   }
