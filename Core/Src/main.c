@@ -86,7 +86,7 @@ int main(void)
 
   while (1)
   {
-    uint8_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, GPIO_PIN_RESET);
+    uint8_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, 0);
     if (((button_mask & 1) || (button_mask & 16)) && mode == 0)
     {
       mode = 1;

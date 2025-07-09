@@ -129,8 +129,9 @@ void Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
 int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint16_t random_number, uint32_t time_now)
 {
 #define SPEED 200
-#define GRAVITY 0.5
-#define JUMP 1
+#define GAP_SIZE 5
+#define GRAVITY (-2)
+#define JUMP 3
 
     // If this is the first time running, clear the screen
     static uint8_t first_time_running = 1;
@@ -145,6 +146,12 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
     static int score = -3;
 
     static int bird_yx[2] = {7, 2};
+
+    static uint8_t jump_requested = 0;
+    if (button_mask)
+    {
+        jump_requested = 1;
+    }
 
     if (time_now - prev_time > SPEED)
     {
@@ -169,13 +176,12 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
 
         if (count >= 5)
         {
-            // Make a new column
-            int random_height = random_number % 11 + 1;
+            int random_height = random_number % (SCREEN_HEIGHT - GAP_SIZE - 1) + 1;
             for (int i = 0; i < random_height; i++)
             {
                 matrix[SCREEN_HEIGHT - i - 1][SCREEN_WIDTH - 1] = 1;
             }
-            for (int i = 0; i < SCREEN_HEIGHT - random_height - 3; i++)
+            for (int i = 0; i < SCREEN_HEIGHT - random_height - GAP_SIZE; i++)
             {
                 matrix[i][SCREEN_WIDTH - 1] = 1;
             }
@@ -183,20 +189,18 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
             score++;
         }
 
-        // Jump the bird
+        // Jump the bird if requested
         static double velocity = 0;
-        if (bird_yx[0] > 0) // If the bird is not on the ground
+        if (jump_requested)
         {
-            velocity -= GRAVITY;
+            velocity = JUMP;
+            jump_requested = 0;
         }
         else
         {
-            velocity = 0;
+            velocity += GRAVITY;
         }
-        if (button_mask > 0) // If any button is pressed
-        {
-            velocity += JUMP;
-        }
+
         bird_yx[0] -= velocity; // Subtract velocity since indexes are reversed
         if (bird_yx[0] > SCREEN_HEIGHT - 1)
         {
