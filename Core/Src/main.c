@@ -39,7 +39,7 @@ static uint16_t button_pins[8] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_3, GPIO_PIN_6
 #define NUM_BUTTON_PINS (sizeof(button_pins) / sizeof(button_pins[0]))
 
 // Mode variables
-int mode = 3; // 0 = Main Menu, 1 = Snake, 2 = Ping Pong, 3 = Flappy Bird, 4 = Tetris, 5 = Show Score
+int mode = 0; // 0 = Main Menu, 1 = Flappy Bird, 2 = Ping Pong, 3 = Snake, 4 = Tetris, 5 = Show Score
 
 /**
  * @brief  The application entry point.
@@ -71,6 +71,7 @@ int main(void)
     // if (button_mask & 0x01 && mode == 0)
     // {
     //   mode = 1;
+    // srand(__HAL_TIM_GET_COUNTER(&htim2));
     // }
     // else if (button_mask & 0x02 && mode == 0)
     // {
@@ -94,20 +95,20 @@ int main(void)
       MainMenuMatrix(screen);
       break;
     case 1:
-      Play_Snake(screen, button_mask);
-
-      break;
-    case 2:
-      Play_Pong(screen, button_mask);
-
-      break;
-    case 3:
       score = Play_FlappyBird(screen, button_mask, rand(), HAL_GetTick());
       if (score != -4)
       {
         mode = 5;
         time_now = HAL_GetTick();
       }
+      break;
+    case 2:
+      Play_Pong(screen, button_mask);
+
+      break;
+    case 3:
+      Play_Snake(screen, button_mask);
+
       break;
     case 4:
       Play_Tetris(screen, button_mask);
