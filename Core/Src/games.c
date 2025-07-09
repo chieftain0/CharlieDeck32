@@ -93,16 +93,115 @@ void clear_screen(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
     return;
 }
 
-int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
+int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint16_t random_number1, uint16_t random_number2, uint32_t time_now)
 {
-    for (int i = 0; i < SCREEN_HEIGHT; i++)
+#define SPEED 200
+
+    static unsigned long prev_time = 0;
+    static int score = 0;
+
+    static uint8_t direction = 1;           //  UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3
+    static uint8_t forbidden_direction = 0; //  UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3
+    static uint8_t foodYX[2] = {-1, -1};
+    static uint8_t length = 3;
+    static uint8_t snakeLYX[SCREEN_HEIGHT * SCREEN_WIDTH][2] = {{0, 0}};
+
+    // If this is the first time running, clear the screen and prepare the snake
+    static uint8_t first_time_running = 1;
+    if (first_time_running)
     {
-        for (int j = 0; j < SCREEN_WIDTH; j++)
+        clear_screen(matrix);
+
+        // Set all snake LYX to -1
+        for (int i = 0; i < SCREEN_HEIGHT * SCREEN_WIDTH; i++)
         {
-            matrix[i][j] = heart_matrix[i][j];
+            snakeLYX[i][0] = -1;
+            snakeLYX[i][1] = -1;
+        }
+        // Set the first 3 LYX in the middle facing down
+        snakeLYX[0][0] = 6;
+        snakeLYX[0][1] = 7;
+        snakeLYX[1][0] = 5;
+        snakeLYX[1][1] = 7;
+        snakeLYX[2][0] = 4;
+        snakeLYX[2][1] = 7;
+
+        first_time_running = 0;
+    }
+
+    // If a button is pressed, change the direction if it is not forbidden
+    if ((button_mask & 1) || (button_mask & 16)) // UP
+    {
+        if (forbidden_direction != 0)
+        {
+            direction = 0;
+            forbidden_direction = 1;
         }
     }
-    return 0;
+    else if ((button_mask & 8) || (button_mask & 128)) // RIGHT
+    {
+        if (forbidden_direction != 3)
+        {
+            direction = 3;
+            forbidden_direction = 2;
+        }
+    }
+    else if ((button_mask & 2) || (button_mask & 32)) // DOWN
+    {
+        if (forbidden_direction != 1)
+        {
+            direction = 1;
+            forbidden_direction = 0;
+        }
+    }
+    else if ((button_mask & 4) || (button_mask & 64)) // LEFT
+    {
+        if (forbidden_direction != 2)
+        {
+            direction = 2;
+            forbidden_direction = 3;
+        }
+    }
+
+    if (time_now - prev_time > SPEED)
+    {
+        prev_time = time_now;
+
+        // Get the food YX (add checking)
+        foodYX[0] = random_number1 % 15;
+        foodYX[1] = random_number2 % 16;
+
+        // Clear the screen
+        clear_screen(matrix);
+        // Move the snake
+        for (int i = 0; i < length; i++)
+        {
+            if (direction == 0) // UP
+            {
+                snakeLYX[i][0]--;
+            }
+            else if (direction == 1) // DOWN
+            {
+                snakeLYX[i][0]++;
+            }
+            else if (direction == 2) // LEFT
+            {
+                snakeLYX[i][1]--;
+            }
+            else if (direction == 3) // RIGHT
+            {
+                snakeLYX[i][1]++;
+            }
+        }
+
+        // Place the snake on the matrix
+        for (int i = 0; i < length; i++)
+        {
+            matrix[snakeLYX[i][0]][snakeLYX[i][1]] = 1;
+        }
+    }
+
+    return -1;
 }
 
 int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
