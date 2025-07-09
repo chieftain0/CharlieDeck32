@@ -90,9 +90,10 @@ void clear_screen(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
             matrix[i][j] = 0;
         }
     }
+    return;
 }
 
-void Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
+int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
 {
     for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
@@ -101,9 +102,10 @@ void Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask
             matrix[i][j] = heart_matrix[i][j];
         }
     }
+    return 0;
 }
 
-void Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
+int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
 {
     for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
@@ -112,6 +114,7 @@ void Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
             matrix[i][j] = smile_matrix[i][j];
         }
     }
+    return 0;
 }
 
 /**
@@ -224,7 +227,7 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
     return -4;
 }
 
-void Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
+int Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
 {
     for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
@@ -233,6 +236,7 @@ void Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mas
             matrix[i][j] = heart_matrix[i][j];
         }
     }
+    return 0;
 }
 
 /**
@@ -253,6 +257,7 @@ void MainMenuMatrix(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
             matrix[i][j] = menu_matrix[i][j];
         }
     }
+    return;
 }
 
 /**
@@ -294,6 +299,7 @@ void ScoreMatrix(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t score)
             matrix[i][j] = score_matrix[i][j];
         }
     }
+    return;
 }
 
 /**
@@ -314,6 +320,7 @@ void HeartMatrix(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
             matrix[i][j] = heart_matrix[i][j];
         }
     }
+    return;
 }
 
 /**
@@ -334,4 +341,5 @@ void SmileMatrix(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
             matrix[i][j] = smile_matrix[i][j];
         }
     }
+    return;
 }
