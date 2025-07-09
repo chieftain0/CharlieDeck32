@@ -68,26 +68,26 @@ int main(void)
   while (1)
   {
     uint16_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, GPIO_PIN_RESET);
-    // if (button_mask & 0x01 && mode == 0)
-    // {
-    //   mode = 1;
-    // srand(__HAL_TIM_GET_COUNTER(&htim2));
-    // }
-    // else if (button_mask & 0x02 && mode == 0)
-    // {
-    //   mode = 2;
-    //   srand(__HAL_TIM_GET_COUNTER(&htim2));
-    // }
-    // else if (button_mask & 0x04 && mode == 0)
-    // {
-    //   mode = 3;
-    //   srand(__HAL_TIM_GET_COUNTER(&htim2)); // Seed for the flappy bird
-    // }
-    // else if (button_mask & 0x08 && mode == 0)
-    // {
-    //   mode = 4;
-    //   srand(__HAL_TIM_GET_COUNTER(&htim2));
-    // }
+    if (button_mask & 0x01 && mode == 0)
+    {
+      mode = 1;
+      srand(__HAL_TIM_GET_COUNTER(&htim2));
+    }
+    else if (button_mask & 0x02 && mode == 0)
+    {
+      mode = 2;
+      srand(__HAL_TIM_GET_COUNTER(&htim2));
+    }
+    else if (button_mask & 0x04 && mode == 0)
+    {
+      mode = 3;
+      srand(__HAL_TIM_GET_COUNTER(&htim2)); // Seed for the flappy bird
+    }
+    else if (button_mask & 0x08 && mode == 0)
+    {
+      mode = 4;
+      srand(__HAL_TIM_GET_COUNTER(&htim2));
+    }
 
     switch (mode)
     {
