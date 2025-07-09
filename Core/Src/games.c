@@ -81,7 +81,18 @@ uint8_t smile_matrix[15][16] = {
     {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
     {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0}};
 
-void Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button_mask)
+void clear_screen(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
+{
+    for (int i = 0; i < SCREEN_HEIGHT; i++)
+    {
+        for (int j = 0; j < SCREEN_WIDTH; j++)
+        {
+            matrix[i][j] = 0;
+        }
+    }
+}
+
+void Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
 {
     for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
@@ -92,7 +103,7 @@ void Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button_mas
     }
 }
 
-void Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button_mask)
+void Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
 {
     for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
@@ -115,11 +126,20 @@ void Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button_mask
  *
  * @return -4 if the game is still running, otherwise the score
  */
-int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button_mask, uint16_t random_number, uint32_t time_now)
+int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint16_t random_number, uint32_t time_now)
 {
 #define SPEED 200
 #define GRAVITY 0.5
 #define JUMP 1
+
+    // If this is the first time running, clear the screen
+    static uint8_t first_time_running = 1;
+    if (first_time_running)
+    {
+        clear_screen(matrix);
+        first_time_running = 0;
+    }
+
     static unsigned long prev_time = 0;
     static int count = 0;
     static int score = -3;
@@ -200,8 +220,15 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button
     return -4;
 }
 
-void Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint16_t button_mask)
+void Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
 {
+    for (int i = 0; i < SCREEN_HEIGHT; i++)
+    {
+        for (int j = 0; j < SCREEN_WIDTH; j++)
+        {
+            matrix[i][j] = heart_matrix[i][j];
+        }
+    }
 }
 
 /**

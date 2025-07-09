@@ -10,7 +10,7 @@ static void MX_TIM2_Init(void);
 static void MX_GPIO_Init(void);
 static void MX_USB_PCD_Init(void);
 
-uint16_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, uint8_t PressState);
+uint8_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, uint8_t PressState);
 
 // USB variables
 GPIO_TypeDef *usb_enum_pin_port = GPIOA;
@@ -32,14 +32,33 @@ uint16_t matrix_pins[] = {
 uint8_t screen[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {0};
 
 // Button variables (External high pull-up)
-// UP, DOWN, LEFT, RIGHT, A, B, C, D
-static GPIO_TypeDef *button_ports[8] = {GPIOB, GPIOB, GPIOB, GPIOB, GPIOA, GPIOA, GPIOA, GPIOA};
-static uint16_t button_pins[8] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_3, GPIO_PIN_6, GPIO_PIN_2, GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_3};
+static GPIO_TypeDef *button_ports[8] = {
+    GPIOB, // 1 = UP
+    GPIOB, // 2 = DOWN
+    GPIOB, // 4 = LEFT
+    GPIOB, // 8 = RIGHT
+    GPIOA, // 16 = C
+    GPIOA, // 32 = A
+    GPIOA, // 64 = D
+    GPIOA  // 128 = B
+};
+static uint16_t button_pins[8] = {
+    GPIO_PIN_4, // 1 = UP
+    GPIO_PIN_5, // 2 = DOWN
+    GPIO_PIN_3, // 4 = LEFT
+    GPIO_PIN_6, // 8 = RIGHT
+    GPIO_PIN_1, // 16 = C
+    GPIO_PIN_2, // 32= A
+    GPIO_PIN_3, // 64 = D
+    GPIO_PIN_0  // 128 = B
+};
 #define NUM_BUTTON_PORTS (sizeof(button_ports) / sizeof(button_ports[0]))
 #define NUM_BUTTON_PINS (sizeof(button_pins) / sizeof(button_pins[0]))
 
 // Mode variables
-int mode = 0; // 0 = Main Menu, 1 = Flappy Bird, 2 = Ping Pong, 3 = Snake, 4 = Tetris, 5 = Show Score
+int mode = 0;
+// 0 = Main Menu, 1 = Snake (UP, C), 2 = Ping Pong (RIGHT, B),
+// 3 = Flappy Bird (DOWN, A), 4 = Tetris (LEFT, D), 5 = Show Score
 
 /**
  * @brief  The application entry point.
@@ -67,23 +86,23 @@ int main(void)
 
   while (1)
   {
-    uint16_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, GPIO_PIN_RESET);
-    if (button_mask & 0x01 && mode == 0)
+    uint8_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, GPIO_PIN_RESET);
+    if (((button_mask & 1) || (button_mask & 16)) && mode == 0)
     {
       mode = 1;
       srand(__HAL_TIM_GET_COUNTER(&htim2));
     }
-    else if (button_mask & 0x02 && mode == 0)
+    else if (((button_mask & 8) || (button_mask & 128)) && mode == 0)
     {
       mode = 2;
       srand(__HAL_TIM_GET_COUNTER(&htim2));
     }
-    else if (button_mask & 0x04 && mode == 0)
+    else if (((button_mask & 2) || (button_mask & 32)) && mode == 0)
     {
       mode = 3;
-      srand(__HAL_TIM_GET_COUNTER(&htim2)); // Seed for the flappy bird
+      srand(__HAL_TIM_GET_COUNTER(&htim2));
     }
-    else if (button_mask & 0x08 && mode == 0)
+    else if (((button_mask & 4) || (button_mask & 64)) && mode == 0)
     {
       mode = 4;
       srand(__HAL_TIM_GET_COUNTER(&htim2));
@@ -95,19 +114,20 @@ int main(void)
       MainMenuMatrix(screen);
       break;
     case 1:
-      score = Play_FlappyBird(screen, button_mask, rand(), HAL_GetTick());
-      if (score != -4)
-      {
-        mode = 5;
-        time_now = HAL_GetTick();
-      }
+      Play_Snake(screen, button_mask);
+
       break;
     case 2:
       Play_Pong(screen, button_mask);
 
       break;
     case 3:
-      Play_Snake(screen, button_mask);
+      score = Play_FlappyBird(screen, button_mask, rand(), (uint32_t)HAL_GetTick());
+      if (score != -4)
+      {
+        mode = 5;
+        time_now = HAL_GetTick();
+      }
 
       break;
     case 4:
@@ -142,15 +162,15 @@ int main(void)
  *
  * @retval 16-bit bitmask of newly pressed buttons, or 0 on input error.
  */
-uint16_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, uint8_t PressState)
+uint8_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, uint8_t PressState)
 {
-  if (NumPorts != NumPins || NumPorts > 16 || NumPins > 16)
+  if (NumPorts != NumPins || NumPorts > 8 || NumPins > 8)
   {
     return 0;
   }
 
-  uint16_t return_val = 0;
-  static uint8_t button_flags[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  uint8_t return_val = 0;
+  static uint8_t button_flags[8] = {0, 0, 0, 0, 0, 0, 0, 0};
   for (int i = 0; i < NumPins; i++)
   {
     if (HAL_GPIO_ReadPin(ButtonPorts[i], ButtonPins[i]) == PressState && button_flags[i] == 0)
