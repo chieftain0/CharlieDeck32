@@ -144,7 +144,7 @@ int main(void)
       }
       break;
     }
-    Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, 50);
+    Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, 14);
   }
 }
 
