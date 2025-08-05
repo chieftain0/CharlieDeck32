@@ -1,5 +1,20 @@
 #include "games.h"
 
+#include <stdlib.h>
+
+// Snake defines
+#define SNAKE_SPEED 200
+
+// Pong defines
+
+// Flappy Bird defines
+#define FLAPPY_SPEED 200
+#define GAP_SIZE 5
+#define GRAVITY (-2)
+#define JUMP 3
+
+// Tetris defines
+
 #define N0 {{1, 1, 1}, {1, 0, 1}, {1, 0, 1}, {1, 0, 1}, {1, 1, 1}}
 #define N1 {{0, 0, 1}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}}
 #define N2 {{1, 1, 1}, {0, 0, 1}, {1, 1, 1}, {1, 0, 0}, {1, 1, 1}}
@@ -93,18 +108,17 @@ void clear_screen(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
     return;
 }
 
-int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint16_t random_number1, uint16_t random_number2, uint32_t time_now)
+int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint32_t time_now)
 {
-#define SPEED 200
-
     static unsigned long prev_time = 0;
-    static int score = 0;
 
-    static uint8_t direction = 1;           //  UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3
-    static uint8_t forbidden_direction = 0; //  UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3
     static uint8_t foodYX[2] = {-1, -1};
-    static uint8_t length = 3;
-    static uint8_t snakeLYX[SCREEN_HEIGHT * SCREEN_WIDTH][2] = {{0, 0}};
+    static uint8_t spawn_food = 1;
+
+    static int8_t snakeLYX[SCREEN_HEIGHT * SCREEN_WIDTH][2] = {{0, 0}};
+    static int8_t directionYX[2] = {1, 0};
+    static int8_t prev_segmentYX[2] = {0, 0};
+    static uint8_t length = 2;
 
     // If this is the first time running, clear the screen and prepare the snake
     static uint8_t first_time_running = 1;
@@ -123,75 +137,109 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask,
         snakeLYX[0][1] = 7;
         snakeLYX[1][0] = 5;
         snakeLYX[1][1] = 7;
-        snakeLYX[2][0] = 4;
-        snakeLYX[2][1] = 7;
 
         first_time_running = 0;
     }
 
-    // If a button is pressed, change the direction if it is not forbidden
+    // If a button is pressed, change the directionYX if it is not forbidden
     if ((button_mask & 1) || (button_mask & 16)) // UP
     {
-        if (forbidden_direction != 0)
+        if (directionYX[0] != 1)
         {
-            direction = 0;
-            forbidden_direction = 1;
+            directionYX[0] = -1;
+            directionYX[1] = 0;
         }
     }
     else if ((button_mask & 8) || (button_mask & 128)) // RIGHT
     {
-        if (forbidden_direction != 3)
+        if (directionYX[1] != -1)
         {
-            direction = 3;
-            forbidden_direction = 2;
+            directionYX[0] = 0;
+            directionYX[1] = 1;
         }
     }
     else if ((button_mask & 2) || (button_mask & 32)) // DOWN
     {
-        if (forbidden_direction != 1)
+        if (directionYX[0] != -1)
         {
-            direction = 1;
-            forbidden_direction = 0;
+            directionYX[0] = 1;
+            directionYX[1] = 0;
         }
     }
     else if ((button_mask & 4) || (button_mask & 64)) // LEFT
     {
-        if (forbidden_direction != 2)
+        if (directionYX[1] != 1)
         {
-            direction = 2;
-            forbidden_direction = 3;
+            directionYX[0] = 0;
+            directionYX[1] = -1;
         }
     }
 
-    if (time_now - prev_time > SPEED)
+    if (spawn_food == 1)
+    {
+        uint8_t exit_flag = 0;
+        while (exit_flag == 0)
+        {
+            exit_flag = 1;
+            foodYX[0] = rand() % 15;
+            foodYX[1] = rand() % 16;
+
+            for (int i = 0; i < length; i++)
+            {
+                if (snakeLYX[i][0] == foodYX[0] && snakeLYX[i][1] == foodYX[1])
+                {
+                    exit_flag = 0;
+                    break;
+                }
+            }
+        }
+
+        spawn_food = 0;
+    }
+
+    if (time_now - prev_time > SNAKE_SPEED)
     {
         prev_time = time_now;
 
-        // Get the food YX (add checking)
-        foodYX[0] = random_number1 % 15;
-        foodYX[1] = random_number2 % 16;
-
         // Clear the screen
         clear_screen(matrix);
-        // Move the snake
-        for (int i = 0; i < length; i++)
+
+        // Move the snake's head
+        prev_segmentYX[0] = snakeLYX[0][0];
+        prev_segmentYX[1] = snakeLYX[0][1];
+        snakeLYX[0][0] += directionYX[0];
+        snakeLYX[0][1] += directionYX[1];
+
+        // Wrap the snake's head
+        snakeLYX[0][0] = (snakeLYX[0][0] + SCREEN_HEIGHT) % SCREEN_HEIGHT;
+        snakeLYX[0][1] = (snakeLYX[0][1] + SCREEN_WIDTH) % SCREEN_WIDTH;
+
+        // Check if snake eats itself
+        for (int i = 1; i < length; i++)
         {
-            if (direction == 0) // UP
+            if (snakeLYX[0][0] == snakeLYX[i][0] && snakeLYX[0][1] == snakeLYX[i][1])
             {
-                snakeLYX[i][0]--;
+                return length - 2;
             }
-            else if (direction == 1) // DOWN
-            {
-                snakeLYX[i][0]++;
-            }
-            else if (direction == 2) // LEFT
-            {
-                snakeLYX[i][1]--;
-            }
-            else if (direction == 3) // RIGHT
-            {
-                snakeLYX[i][1]++;
-            }
+        }
+
+        // Check if food is eaten
+        if (snakeLYX[0][0] == foodYX[0] && snakeLYX[0][1] == foodYX[1])
+        {
+            length++;
+            spawn_food = 1;
+        }
+
+        // Move the snake's body
+        for (int i = 1; i < length; i++)
+        {
+            uint8_t tempYX[2];
+            tempYX[0] = snakeLYX[i][0];
+            tempYX[1] = snakeLYX[i][1];
+            snakeLYX[i][0] = prev_segmentYX[0];
+            snakeLYX[i][1] = prev_segmentYX[1];
+            prev_segmentYX[0] = tempYX[0];
+            prev_segmentYX[1] = tempYX[1];
         }
 
         // Place the snake on the matrix
@@ -199,6 +247,9 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask,
         {
             matrix[snakeLYX[i][0]][snakeLYX[i][1]] = 1;
         }
+
+        // Place the food on the matrix
+        matrix[foodYX[0]][foodYX[1]] = 1;
     }
 
     return -1;
@@ -228,13 +279,8 @@ int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
  *
  * @return -4 if the game is still running, otherwise the score
  */
-int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint16_t random_number, uint32_t time_now)
+int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint32_t time_now)
 {
-#define SPEED 200
-#define GAP_SIZE 5
-#define GRAVITY (-2)
-#define JUMP 3
-
     // If this is the first time running, clear the screen
     static uint8_t first_time_running = 1;
     if (first_time_running)
@@ -255,7 +301,7 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
         jump_requested = 1;
     }
 
-    if (time_now - prev_time > SPEED)
+    if (time_now - prev_time > FLAPPY_SPEED)
     {
         prev_time = time_now;
 
@@ -278,7 +324,7 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
 
         if (count >= 5)
         {
-            int random_height = random_number % (SCREEN_HEIGHT - GAP_SIZE - 1) + 1;
+            int random_height = rand() % (SCREEN_HEIGHT - GAP_SIZE - 1) + 1;
             for (int i = 0; i < random_height; i++)
             {
                 matrix[SCREEN_HEIGHT - i - 1][SCREEN_WIDTH - 1] = 1;

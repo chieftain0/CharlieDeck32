@@ -114,7 +114,12 @@ int main(void)
       MainMenuMatrix(screen);
       break;
     case 1:
-      Play_Snake(screen, button_mask, rand(), rand(), (uint32_t)HAL_GetTick());
+      score = Play_Snake(screen, button_mask, (uint32_t)HAL_GetTick());
+      if (score != -1)
+      {
+        mode = 5;
+        time_now = HAL_GetTick();
+      }
 
       break;
     case 2:
@@ -122,7 +127,7 @@ int main(void)
 
       break;
     case 3:
-      score = Play_FlappyBird(screen, button_mask, rand(), (uint32_t)HAL_GetTick());
+      score = Play_FlappyBird(screen, button_mask, (uint32_t)HAL_GetTick());
       if (score != -4)
       {
         mode = 5;
