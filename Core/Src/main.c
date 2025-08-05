@@ -77,7 +77,7 @@ int main(void)
   HAL_TIM_Base_Start(&htim2);
   Charlieplex_Clear(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS);
 
-  srand(__HAL_TIM_GET_COUNTER(&htim2)); // Temporary seed move to
+  srand(__HAL_TIM_GET_COUNTER(&htim2)); // Seed for pseudo-random
 
   static unsigned long time_now = 0;
   time_now = HAL_GetTick();
@@ -90,22 +90,18 @@ int main(void)
     if (((button_mask & 1) || (button_mask & 16)) && mode == 0)
     {
       mode = 1;
-      srand(__HAL_TIM_GET_COUNTER(&htim2));
     }
     else if (((button_mask & 8) || (button_mask & 128)) && mode == 0)
     {
       mode = 2;
-      srand(__HAL_TIM_GET_COUNTER(&htim2));
     }
     else if (((button_mask & 2) || (button_mask & 32)) && mode == 0)
     {
       mode = 3;
-      srand(__HAL_TIM_GET_COUNTER(&htim2));
     }
     else if (((button_mask & 4) || (button_mask & 64)) && mode == 0)
     {
       mode = 4;
-      srand(__HAL_TIM_GET_COUNTER(&htim2));
     }
 
     switch (mode)
