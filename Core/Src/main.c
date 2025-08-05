@@ -123,7 +123,12 @@ int main(void)
 
       break;
     case 2:
-      Play_Pong(screen, button_mask);
+      score = Play_Pong(screen, button_mask, (uint32_t)HAL_GetTick());
+      if (score != -1)
+      {
+        mode = 5;
+        time_now = HAL_GetTick();
+      }
 
       break;
     case 3:

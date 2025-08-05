@@ -108,6 +108,17 @@ void clear_screen(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
     return;
 }
 
+/**
+ * @brief Snake game
+ *
+ * This function implements the game of Snake.
+ *
+ * @param matrix The screen matrix (15x16)
+ * @param button_mask The mask of buttons pressed
+ * @param time_now The current time
+ *
+ * @return -1 if the game is still running, otherwise the score
+ */
 int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint32_t time_now)
 {
     static unsigned long prev_time = 0;
@@ -219,7 +230,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask,
         {
             if (snakeLYX[0][0] == snakeLYX[i][0] && snakeLYX[0][1] == snakeLYX[i][1])
             {
-                return length - 2;
+                return (length - 2);
             }
         }
 
@@ -255,7 +266,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask,
     return -1;
 }
 
-int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
+int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint32_t time_now)
 {
     for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
