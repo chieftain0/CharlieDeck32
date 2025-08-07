@@ -86,7 +86,7 @@ int main(void)
     uint8_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, 0);
     if (((button_mask & 1) || (button_mask & 16)) && mode == 0)
     {
-      srand(__HAL_TIM_GET_COUNTER(&htim2));
+      srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
       mode = 1;
     }
     else if (((button_mask & 8) || (button_mask & 128)) && mode == 0)
