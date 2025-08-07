@@ -3,6 +3,9 @@
 #include "usb_device.h"
 #include "gpio.h"
 
+#include "charlieplex.h"
+#include "games.h"
+
 void SystemClock_Config(void);
 uint8_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, uint8_t PressState);
 
@@ -49,10 +52,27 @@ static uint16_t button_pins[8] = {
 #define NUM_BUTTON_PORTS (sizeof(button_ports) / sizeof(button_ports[0]))
 #define NUM_BUTTON_PINS (sizeof(button_pins) / sizeof(button_pins[0]))
 
+#define BUTTON_UP (1 << 0)    // 0x01
+#define BUTTON_DOWN (1 << 1)  // 0x02
+#define BUTTON_LEFT (1 << 2)  // 0x04
+#define BUTTON_RIGHT (1 << 3) // 0x08
+#define BUTTON_C (1 << 4)     // 0x10
+#define BUTTON_A (1 << 5)     // 0x20
+#define BUTTON_D (1 << 6)     // 0x40
+#define BUTTON_B (1 << 7)     // 0x80
+
 // Mode variables
-int mode = 0;
-// 0 = Main Menu, 1 = Snake (UP, C), 2 = Ping Pong (RIGHT, B),
-// 3 = Flappy Bird (DOWN, A), 4 = Tetris (LEFT, D), 5 = Show Score
+typedef enum
+{
+  MODE_MAIN_MENU = 0,
+  MODE_SNAKE = 1,
+  MODE_PONG = 2,
+  MODE_FLAPPY = 3,
+  MODE_TETRIS = 4,
+  MODE_SCORE = 5
+} GameMode;
+
+GameMode mode = MODE_MAIN_MENU;
 
 /**
  * @brief  The application entry point.
@@ -76,6 +96,8 @@ int main(void)
 
   Charlieplex_Clear(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS);
 
+  HAL_GPIO_WritePin(usb_enum_pin_port, usb_enum_pin, GPIO_PIN_SET); // Initialize USB
+
   static unsigned long time_now = 0;
   time_now = HAL_GetTick();
 
@@ -84,25 +106,25 @@ int main(void)
   while (1)
   {
     uint8_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, 0);
-    if (((button_mask & 1) || (button_mask & 16)) && mode == 0)
+    if (((button_mask & BUTTON_UP) || (button_mask & BUTTON_C)) && mode == MODE_MAIN_MENU)
     {
       srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
-      mode = 1;
+      mode = MODE_SNAKE;
     }
-    else if (((button_mask & 8) || (button_mask & 128)) && mode == 0)
+    else if (((button_mask & BUTTON_RIGHT) || (button_mask & BUTTON_B)) && mode == MODE_MAIN_MENU)
     {
       srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
-      mode = 2;
+      mode = MODE_PONG;
     }
-    else if (((button_mask & 2) || (button_mask & 32)) && mode == 0)
+    else if (((button_mask & BUTTON_DOWN) || (button_mask & BUTTON_A)) && mode == MODE_MAIN_MENU)
     {
       srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
-      mode = 3;
+      mode = MODE_FLAPPY;
     }
-    else if (((button_mask & 4) || (button_mask & 64)) && mode == 0)
+    else if (((button_mask & BUTTON_LEFT) || (button_mask & BUTTON_D)) && mode == MODE_MAIN_MENU)
     {
       srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
-      mode = 4;
+      mode = MODE_TETRIS;
     }
 
     switch (mode)
@@ -114,7 +136,7 @@ int main(void)
       score = Play_Snake(screen, button_mask, (uint32_t)HAL_GetTick());
       if (score != -1)
       {
-        mode = 5;
+        mode = MODE_SCORE;
         time_now = HAL_GetTick();
       }
 
@@ -123,7 +145,7 @@ int main(void)
       score = Play_Pong(screen, button_mask, (uint32_t)HAL_GetTick());
       if (score != -1)
       {
-        mode = 5;
+        mode = MODE_SCORE;
         time_now = HAL_GetTick();
       }
 
@@ -132,7 +154,7 @@ int main(void)
       score = Play_FlappyBird(screen, button_mask, (uint32_t)HAL_GetTick());
       if (score != -4)
       {
-        mode = 5;
+        mode = MODE_SCORE;
         time_now = HAL_GetTick();
       }
 
