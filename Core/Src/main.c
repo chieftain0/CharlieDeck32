@@ -18,6 +18,7 @@ GPIO_TypeDef *matrix_ports[] = {
     GPIOA, GPIOA, GPIOA, GPIOB, GPIOB, GPIOB, GPIOB, GPIOB,
     GPIOB, GPIOB, GPIOB, GPIOB, GPIOA, GPIOA, GPIOA, GPIOA};
 #define NUM_MATRIX_PORTS (sizeof(matrix_ports) / sizeof(matrix_ports[0]))
+#define TARGET_FPS 300
 
 uint16_t matrix_pins[] = {
     GPIO_PIN_10, GPIO_PIN_9, GPIO_PIN_8, GPIO_PIN_15,
@@ -26,7 +27,10 @@ uint16_t matrix_pins[] = {
     GPIO_PIN_7, GPIO_PIN_6, GPIO_PIN_5, GPIO_PIN_4};
 #define NUM_MATRIX_PINS (sizeof(matrix_pins) / sizeof(matrix_pins[0]))
 
-uint8_t screen[NUM_MATRIX_PINS - 1][NUM_MATRIX_PINS] = {0};
+#define NUM_ROWS_Y (NUM_MATRIX_PINS - 1)
+#define NUM_COLUMNS_X (NUM_MATRIX_PINS)
+
+uint8_t screen[NUM_ROWS_Y][NUM_COLUMNS_X] = {0};
 
 // Button variables (External high pull-up)
 static GPIO_TypeDef *button_ports[8] = {
@@ -173,7 +177,7 @@ int main(void)
       }
       break;
     }
-    Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, 14);
+    Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, (uint32_t)(TARGET_FPS / (NUM_ROWS_Y * NUM_COLUMNS_X)));
   }
 }
 
