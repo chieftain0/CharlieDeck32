@@ -8,6 +8,10 @@
 
 void SystemClock_Config(void);
 uint8_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, uint8_t NumPorts, uint16_t *ButtonPins, uint8_t NumPins, uint8_t PressState);
+static inline void seed_rng()
+{
+  srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
+}
 
 // USB variables
 GPIO_TypeDef *usb_enum_pin_port = GPIOA;
@@ -112,28 +116,28 @@ int main(void)
     uint8_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, GPIO_PIN_RESET);
     if (((button_mask & BUTTON_UP) || (button_mask & BUTTON_C)) && mode == MODE_MAIN_MENU)
     {
-      srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
+      seed_rng();
       mode = MODE_SNAKE;
     }
     else if (((button_mask & BUTTON_RIGHT) || (button_mask & BUTTON_B)) && mode == MODE_MAIN_MENU)
     {
-      srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
+      seed_rng();
       mode = MODE_PONG;
     }
     else if (((button_mask & BUTTON_DOWN) || (button_mask & BUTTON_A)) && mode == MODE_MAIN_MENU)
     {
-      srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
+      seed_rng();
       mode = MODE_FLAPPY;
     }
     else if (((button_mask & BUTTON_LEFT) || (button_mask & BUTTON_D)) && mode == MODE_MAIN_MENU)
     {
-      srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
+      seed_rng();
       mode = MODE_TETRIS;
     }
 
     switch (mode)
     {
-    case 0:
+    case MODE_MAIN_MENU:
       MainMenuMatrix(screen);
       break;
     case MODE_SNAKE:
