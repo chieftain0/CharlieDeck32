@@ -8,10 +8,7 @@
 
 void SystemClock_Config(void);
 uint8_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, uint8_t NumPorts, uint16_t *ButtonPins, uint8_t NumPins, uint8_t PressState);
-static inline void seed_rng()
-{
-  srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
-}
+static inline void seed_rng();
 
 // USB variables
 GPIO_TypeDef *usb_enum_pin_port = GPIOA;
@@ -183,6 +180,17 @@ int main(void)
     }
     Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, (uint32_t)(TARGET_FPS / (NUM_ROWS_Y * NUM_COLUMNS_X)));
   }
+}
+
+/**
+ * @brief Seeds the random number generator with the current time and the
+ *        current counter value of timer 2. This should be called at the
+ *        beginning of any game to ensure that the random numbers are
+ *        different each time the game is played.
+ */
+static inline void seed_rng()
+{
+  srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
 }
 
 /**
