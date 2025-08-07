@@ -7,7 +7,7 @@
 #include "games.h"
 
 void SystemClock_Config(void);
-uint8_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, uint8_t PressState);
+uint8_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, uint8_t NumPorts, uint16_t *ButtonPins, uint8_t NumPins, uint8_t PressState);
 
 // USB variables
 GPIO_TypeDef *usb_enum_pin_port = GPIOA;
@@ -109,7 +109,7 @@ int main(void)
 
   while (1)
   {
-    uint8_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, 0);
+    uint8_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, GPIO_PIN_RESET);
     if (((button_mask & BUTTON_UP) || (button_mask & BUTTON_C)) && mode == MODE_MAIN_MENU)
     {
       srand(__HAL_TIM_GET_COUNTER(&htim2) ^ HAL_GetTick());
@@ -136,7 +136,7 @@ int main(void)
     case 0:
       MainMenuMatrix(screen);
       break;
-    case 1:
+    case MODE_SNAKE:
       score = Play_Snake(screen, button_mask, (uint32_t)HAL_GetTick());
       if (score != -1)
       {
@@ -145,7 +145,7 @@ int main(void)
       }
 
       break;
-    case 2:
+    case MODE_PONG:
       score = Play_Pong(screen, button_mask, (uint32_t)HAL_GetTick());
       if (score != -1)
       {
@@ -154,7 +154,7 @@ int main(void)
       }
 
       break;
-    case 3:
+    case MODE_FLAPPY:
       score = Play_FlappyBird(screen, button_mask, (uint32_t)HAL_GetTick());
       if (score != -4)
       {
@@ -163,7 +163,7 @@ int main(void)
       }
 
       break;
-    case 4:
+    case MODE_TETRIS:
       Play_Tetris(screen, button_mask);
       break;
     case 5:
@@ -184,26 +184,28 @@ int main(void)
 /**
  * @brief Polls buttons and returns a bitmask of newly pressed buttons.
  *
- * Detects edge-triggered presses for up to 16 buttons. Returns a bitmask where bit i is set
+ * Detects edge-triggered presses for up to 8 buttons. Returns a bitmask where bit i is set
  * if button i was just pressed (transitioned to PressState).
  *
  * @param ButtonPorts Array of GPIO port pointers.
- * @param NumPorts Number of GPIO ports (must equal NumPins, max 16).
+ * @param NumPorts Number of GPIO ports (must equal NumPins, max 8).
  * @param ButtonPins Array of GPIO pin numbers.
- * @param NumPins Number of pins (must equal NumPorts, max 16).
+ * @param NumPins Number of pins (must equal NumPorts, max 8).
  * @param PressState GPIO state considered as "pressed" (e.g. GPIO_PIN_RESET).
  *
- * @retval 16-bit bitmask of newly pressed buttons, or 0 on input error.
+ * @retval 8-bit bitmask of newly pressed buttons, or 0 on input error.
  */
-uint8_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, int NumPorts, uint16_t *ButtonPins, int NumPins, uint8_t PressState)
+uint8_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, uint8_t NumPorts, uint16_t *ButtonPins, uint8_t NumPins, uint8_t PressState)
 {
-  if (NumPorts != NumPins || NumPorts > 8 || NumPins > 8)
+#define BIT_WIDTH_TYPE(type) (sizeof(type) * 8)
+
+  if (NumPorts != NumPins || NumPorts > BIT_WIDTH_TYPE(uint8_t) || NumPins > BIT_WIDTH_TYPE(uint8_t))
   {
     return 0;
   }
 
   uint8_t return_val = 0;
-  static uint8_t button_flags[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+  static uint8_t button_flags[BIT_WIDTH_TYPE(uint8_t)] = {0, 0, 0, 0, 0, 0, 0, 0};
   for (int i = 0; i < NumPins; i++)
   {
     if (HAL_GPIO_ReadPin(ButtonPorts[i], ButtonPins[i]) == PressState && button_flags[i] == 0)
