@@ -103,7 +103,7 @@ void Charlieplex_SetLED(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int
  *
  * @warning This function is blocking. Use with caution.
  */
-void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int num_pins, uint8_t matrix[num_pins - 1][num_pins], unsigned long pixel_delay_us)
+void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int num_pins, uint8_t matrix[num_pins - 1][num_pins], uint32_t pixel_delay_us)
 {
     for (int i = 0; i < num_pins - 1; i++)
     {
@@ -116,9 +116,9 @@ void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, in
     }
 }
 
-void Delay_us(unsigned long us)
+void Delay_us(uint32_t us)
 {
-    unsigned long start = TIM1->CNT;
+    uint32_t start = TIM1->CNT;
     while (TIM1->CNT - start < us)
     {
     }
