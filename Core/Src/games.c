@@ -114,12 +114,12 @@ void clear_screen(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
  * This function implements the game of Snake.
  *
  * @param matrix The screen matrix (15x16)
- * @param button_mask The mask of buttons pressed
+ * @param button_mask_click The mask of clicked buttons
  * @param time_now The current time
  *
  * @return -1 if the game is still running, otherwise the score
  */
-int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint32_t time_now)
+int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_click, uint32_t time_now)
 {
     static unsigned long prev_time = 0;
 
@@ -153,7 +153,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask,
     }
 
     // If a button is pressed, change the directionYX if it is not forbidden
-    if ((button_mask & 1) || (button_mask & 16)) // UP
+    if ((button_mask_click & 1) || (button_mask_click & 16)) // UP
     {
         if (directionYX[0] != 1)
         {
@@ -161,7 +161,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask,
             directionYX[1] = 0;
         }
     }
-    else if ((button_mask & 8) || (button_mask & 128)) // RIGHT
+    else if ((button_mask_click & 8) || (button_mask_click & 128)) // RIGHT
     {
         if (directionYX[1] != -1)
         {
@@ -169,7 +169,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask,
             directionYX[1] = 1;
         }
     }
-    else if ((button_mask & 2) || (button_mask & 32)) // DOWN
+    else if ((button_mask_click & 2) || (button_mask_click & 32)) // DOWN
     {
         if (directionYX[0] != -1)
         {
@@ -177,7 +177,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask,
             directionYX[1] = 0;
         }
     }
-    else if ((button_mask & 4) || (button_mask & 64)) // LEFT
+    else if ((button_mask_click & 4) || (button_mask_click & 64)) // LEFT
     {
         if (directionYX[1] != 1)
         {
@@ -266,7 +266,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask,
     return -1;
 }
 
-int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint32_t time_now)
+int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_press, uint32_t time_now)
 {
     for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
@@ -284,13 +284,13 @@ int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, 
  * This function implements the game of Flappy Bird.
  *
  * @param matrix The screen matrix (15x16)
- * @param button_mask The mask of buttons pressed
+ * @param button_mask_click The mask of clicked buttons
  * @param random_number A random number to generate the next column of the game
  * @param time_now The current time
  *
  * @return -4 if the game is still running, otherwise the score
  */
-int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask, uint32_t time_now)
+int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_click, uint32_t time_now)
 {
     // If this is the first time running, clear the screen
     static uint8_t first_time_running = 1;
@@ -307,7 +307,7 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
     static int bird_yx[2] = {7, 2};
 
     static uint8_t jump_requested = 0;
-    if (button_mask)
+    if (button_mask_click)
     {
         jump_requested = 1;
     }
@@ -383,7 +383,7 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
     return -4;
 }
 
-int Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask)
+int Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_click)
 {
     for (int i = 0; i < SCREEN_HEIGHT; i++)
     {
