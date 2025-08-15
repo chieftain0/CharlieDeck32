@@ -2,10 +2,21 @@
 
 #include <stdlib.h>
 
+// Button defines from main.c (remap if needed)
+#define BUTTON_UP (1 << 0)    // 0x01
+#define BUTTON_DOWN (1 << 1)  // 0x02
+#define BUTTON_LEFT (1 << 2)  // 0x04
+#define BUTTON_RIGHT (1 << 3) // 0x08
+#define BUTTON_C (1 << 4)     // 0x10
+#define BUTTON_A (1 << 5)     // 0x20
+#define BUTTON_D (1 << 6)     // 0x40
+#define BUTTON_B (1 << 7)     // 0x80
+
 // Snake defines
 #define SNAKE_SPEED 200
 
 // Pong defines
+#define PONG_SPEED 100
 
 // Flappy Bird defines
 #define FLAPPY_SPEED 200
@@ -121,7 +132,7 @@ void clear_screen(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH])
  */
 int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_click, uint32_t time_now)
 {
-    static unsigned long prev_time = 0;
+    static uint32_t prev_time = 0;
 
     static uint8_t foodYX[2] = {-1, -1};
     static uint8_t spawn_food = 1;
@@ -268,14 +279,99 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
 
 int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_press, uint32_t time_now)
 {
-    for (int i = 0; i < SCREEN_HEIGHT; i++)
+    static uint32_t prev_time = 0;
+
+    static int8_t velocityYX[2] = {0, 0};
+    static int8_t ballYX[2] = {SCREEN_HEIGHT / 2, SCREEN_WIDTH / 2};
+    static int8_t playerYX[2] = {SCREEN_HEIGHT - 1, SCREEN_WIDTH / 2};
+
+    uint8_t player_size = 3; // size of the player paddle (must be odd)
+
+    static int score = 0;
+
+    static uint8_t first_time_running = 1;
+    if (first_time_running)
     {
-        for (int j = 0; j < SCREEN_WIDTH; j++)
+        clear_screen(matrix);
+
+        // set initial random velocity
+        velocityYX[0] = -1;
+        velocityYX[1] = rand() % 3 - 1;
+
+        first_time_running = 0;
+    }
+
+    if (time_now - prev_time > PONG_SPEED)
+    {
+        prev_time = time_now;
+
+        // Clear the screen
+        clear_screen(matrix);
+
+        // Check for player collision
+        for (int i = 0; i < player_size / 2 + 1; i++)
         {
-            matrix[i][j] = smile_matrix[i][j];
+            if (ballYX[0] == playerYX[0] && ballYX[1] == (playerYX[1] + i))
+            {
+                velocityYX[0] = -velocityYX[0];
+                velocityYX[1] = i;
+                score++;
+                break;
+            }
+            if (ballYX[0] == playerYX[0] && ballYX[1] == (playerYX[1] - i))
+            {
+                velocityYX[0] = -velocityYX[0];
+                velocityYX[1] = -i;
+                score++;
+                break;
+            }
+        }
+
+        // Check for border collision (top, left and right)
+        if (ballYX[0] <= 0)
+        {
+            velocityYX[0] = -velocityYX[0];
+        }
+        if (ballYX[1] <= 0)
+        {
+            velocityYX[1] = -velocityYX[1];
+        }
+        if (ballYX[1] >= SCREEN_WIDTH - 1)
+        {
+            velocityYX[1] = -velocityYX[1];
+        }
+
+        // Move the ball
+        ballYX[0] += velocityYX[0];
+        ballYX[1] += velocityYX[1];
+
+        // Move the player
+        if ((button_mask_press & BUTTON_LEFT || button_mask_press & BUTTON_D) && playerYX[1] > player_size / 2)
+        {
+            playerYX[1] -= 1;
+        }
+        if ((button_mask_press & BUTTON_RIGHT || button_mask_press & BUTTON_C) && playerYX[1] < SCREEN_WIDTH - 1 - (player_size / 2))
+        {
+            playerYX[1] += 1;
         }
     }
-    return 0;
+
+    // Check for out of bounds
+    if (ballYX[0] >= SCREEN_HEIGHT)
+    {
+        return score;
+    }
+
+    // Place the ball on the matrix
+    matrix[ballYX[0]][ballYX[1]] = 1;
+    // Place the player on the matrix
+    for (int i = 0; i < player_size / 2 + 1; i++)
+    {
+        matrix[playerYX[0]][playerYX[1] - i] = 1;
+        matrix[playerYX[0]][playerYX[1] + i] = 1;
+    }
+
+    return -1;
 }
 
 /**
@@ -300,7 +396,7 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
         first_time_running = 0;
     }
 
-    static unsigned long prev_time = 0;
+    static uint32_t prev_time = 0;
     static int count = 0;
     static int score = -3;
 
