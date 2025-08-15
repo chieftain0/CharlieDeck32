@@ -6,8 +6,10 @@
 #include "charlieplex.h"
 #include "games.h"
 
+#define BIT_WIDTH_TYPE(type) (sizeof(type) * 8)
+
 void SystemClock_Config(void);
-uint8_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, uint8_t NumPorts, uint16_t *ButtonPins, uint8_t NumPins, uint8_t PressState);
+void Poll_Buttons(GPIO_TypeDef **ButtonPorts, uint16_t *ButtonPins, uint8_t NumButtons, uint8_t PressState, uint8_t *clickMap, uint8_t *pressMap);
 static inline void seed_rng();
 
 // USB variables
@@ -110,23 +112,25 @@ int main(void)
 
   while (1)
   {
-    uint8_t button_mask = Poll_Buttons(button_ports, NUM_BUTTON_PORTS, button_pins, NUM_BUTTON_PINS, GPIO_PIN_RESET);
-    if (((button_mask & BUTTON_UP) || (button_mask & BUTTON_C)) && mode == MODE_MAIN_MENU)
+    uint8_t click_mask = 0;
+    uint8_t press_mask = 0;
+    Poll_Buttons(button_ports, button_pins, NUM_BUTTON_PORTS, GPIO_PIN_RESET, &click_mask, &press_mask);
+    if (((click_mask & BUTTON_UP) || (click_mask & BUTTON_C)) && mode == MODE_MAIN_MENU)
     {
       seed_rng();
       mode = MODE_SNAKE;
     }
-    else if (((button_mask & BUTTON_RIGHT) || (button_mask & BUTTON_B)) && mode == MODE_MAIN_MENU)
+    else if (((click_mask & BUTTON_RIGHT) || (click_mask & BUTTON_B)) && mode == MODE_MAIN_MENU)
     {
       seed_rng();
       mode = MODE_PONG;
     }
-    else if (((button_mask & BUTTON_DOWN) || (button_mask & BUTTON_A)) && mode == MODE_MAIN_MENU)
+    else if (((click_mask & BUTTON_DOWN) || (click_mask & BUTTON_A)) && mode == MODE_MAIN_MENU)
     {
       seed_rng();
       mode = MODE_FLAPPY;
     }
-    else if (((button_mask & BUTTON_LEFT) || (button_mask & BUTTON_D)) && mode == MODE_MAIN_MENU)
+    else if (((click_mask & BUTTON_LEFT) || (click_mask & BUTTON_D)) && mode == MODE_MAIN_MENU)
     {
       seed_rng();
       mode = MODE_TETRIS;
@@ -138,7 +142,7 @@ int main(void)
       MainMenuMatrix(screen);
       break;
     case MODE_SNAKE:
-      score = Play_Snake(screen, button_mask, (uint32_t)HAL_GetTick());
+      score = Play_Snake(screen, click_mask, (uint32_t)HAL_GetTick());
       if (score != -1)
       {
         mode = MODE_SCORE;
@@ -147,7 +151,7 @@ int main(void)
 
       break;
     case MODE_PONG:
-      score = Play_Pong(screen, button_mask, (uint32_t)HAL_GetTick());
+      score = Play_Pong(screen, press_mask, (uint32_t)HAL_GetTick());
       if (score != -1)
       {
         mode = MODE_SCORE;
@@ -156,7 +160,7 @@ int main(void)
 
       break;
     case MODE_FLAPPY:
-      score = Play_FlappyBird(screen, button_mask, (uint32_t)HAL_GetTick());
+      score = Play_FlappyBird(screen, click_mask, (uint32_t)HAL_GetTick());
       if (score != -4)
       {
         mode = MODE_SCORE;
@@ -165,7 +169,7 @@ int main(void)
 
       break;
     case MODE_TETRIS:
-      Play_Tetris(screen, button_mask);
+      Play_Tetris(screen, click_mask);
       break;
     case 5:
       if (HAL_GetTick() - time_now < 3000)
@@ -194,43 +198,68 @@ static inline void seed_rng()
 }
 
 /**
- * @brief Polls buttons and returns a bitmask of newly pressed buttons.
+ * @brief Polls an array of buttons, detects clicks and current press states.
  *
- * Detects edge-triggered presses for up to 8 buttons. Returns a bitmask where bit i is set
- * if button i was just pressed (transitioned to PressState).
+ * This function scans multiple buttons connected to GPIO pins, updates two bitmasks:
+ * - **clickMap**: Bits set for buttons that transitioned from released to pressed
+ *   during this polling cycle (rising edge detection).
+ * - **pressMap**: Bits set for buttons that are currently pressed.
  *
- * @param ButtonPorts Array of GPIO port pointers.
- * @param NumPorts Number of GPIO ports (must equal NumPins, max 8).
- * @param ButtonPins Array of GPIO pin numbers.
- * @param NumPins Number of pins (must equal NumPorts, max 8).
- * @param PressState GPIO state considered as "pressed" (e.g. GPIO_PIN_RESET).
+ * @param[in]  ButtonPorts  Array of pointers to GPIO port structures for each button.
+ * @param[in]  NumButtons   Number of buttons to scan (must be <= 8 for uint8_t maps).
+ * @param[in]  ButtonPins   Array of GPIO pin numbers (HAL format) for each button.
+ * @param[in]  PressState   Logical state representing a pressed button
+ *                          (`GPIO_PIN_SET` or `GPIO_PIN_RESET`).
+ * @param[out] clickMap     Pointer to a uint8_t that will store the click bitmask.
+ *                          A bit is set if that button was newly pressed this cycle.
+ * @param[out] pressMap     Pointer to a uint8_t that will store the press bitmask.
+ *                          A bit is set if that button is currently pressed.
  *
- * @retval 8-bit bitmask of newly pressed buttons, or 0 on input error.
+ * @note Both bitmasks use bit position `i` for button index `i`.
+ *       Example: If button 0 and 2 are pressed, pressMap = `0b00000101`.
+ *
+ * @warning NumButtons must not exceed 8 when using `uint8_t` maps. Increase the type
+ *          if you need more buttons.
+ *
+ * @return None.
  */
-uint8_t Poll_Buttons(GPIO_TypeDef **ButtonPorts, uint8_t NumPorts, uint16_t *ButtonPins, uint8_t NumPins, uint8_t PressState)
+void Poll_Buttons(GPIO_TypeDef **ButtonPorts, uint16_t *ButtonPins, uint8_t NumButtons, uint8_t PressState, uint8_t *clickMap, uint8_t *pressMap)
 {
-#define BIT_WIDTH_TYPE(type) (sizeof(type) * 8)
-
-  if (NumPorts != NumPins || NumPorts > BIT_WIDTH_TYPE(uint8_t) || NumPins > BIT_WIDTH_TYPE(uint8_t))
+  if (NumButtons > BIT_WIDTH_TYPE(uint8_t))
   {
-    return 0;
+    *clickMap = 0;
+    *pressMap = 0;
+    return;
   }
 
-  uint8_t return_val = 0;
-  static uint8_t button_flags[BIT_WIDTH_TYPE(uint8_t)] = {0, 0, 0, 0, 0, 0, 0, 0};
-  for (int i = 0; i < NumPins; i++)
+  static uint8_t button_flags[BIT_WIDTH_TYPE(uint8_t)] = {0};
+  uint8_t click_mask = 0;
+  uint8_t press_mask = 0;
+
+  for (uint8_t i = 0; i < NumButtons; i++)
   {
-    if (HAL_GPIO_ReadPin(ButtonPorts[i], ButtonPins[i]) == PressState && button_flags[i] == 0)
+    GPIO_PinState state = HAL_GPIO_ReadPin(ButtonPorts[i], ButtonPins[i]);
+
+    // Track continuous press state
+    if (state == PressState)
+    {
+      press_mask |= (1 << i);
+    }
+
+    // Detect click (rising edge of press)
+    if (state == PressState && button_flags[i] == 0)
     {
       button_flags[i] = 1;
-      return_val |= (1 << i);
+      click_mask |= (1 << i);
     }
-    else if (HAL_GPIO_ReadPin(ButtonPorts[i], ButtonPins[i]) == !PressState && button_flags[i] == 1)
+    else if (state != PressState && button_flags[i] == 1)
     {
       button_flags[i] = 0;
     }
   }
-  return return_val;
+
+  *clickMap = click_mask;
+  *pressMap = press_mask;
 }
 
 /**
