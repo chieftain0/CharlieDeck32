@@ -283,7 +283,8 @@ int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_p
 
     static int8_t velocityYX[2] = {0, 0};
     static int8_t ballYX[2] = {SCREEN_HEIGHT / 2, SCREEN_WIDTH / 2};
-    static int8_t playerYX[2] = {SCREEN_HEIGHT - 1, SCREEN_WIDTH / 2};
+    static int8_t playerLeftYX[2] = {SCREEN_HEIGHT / 2, 0};
+    static int8_t playerRightYX[2] = {SCREEN_HEIGHT / 2, SCREEN_WIDTH - 1};
 
     uint8_t player_size = 3; // size of the player paddle (must be odd)
 
@@ -308,67 +309,87 @@ int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_p
         // Clear the screen
         clear_screen(matrix);
 
-        // Check for player collision
+        // Check for player collisions
         for (int i = 0; i < player_size / 2 + 1; i++)
         {
-            if (ballYX[0] == playerYX[0] && ballYX[1] == (playerYX[1] + i))
+            if (ballYX[0] == playerLeftYX[1] && ballYX[0] == (playerLeftYX[1] + i))
             {
-                velocityYX[0] = -velocityYX[0];
-                velocityYX[1] = i;
+                velocityYX[1] = -velocityYX[0];
+                velocityYX[0] = i;
                 score++;
                 break;
             }
-            if (ballYX[0] == playerYX[0] && ballYX[1] == (playerYX[1] - i))
+            if (ballYX[0] == playerLeftYX[1] && ballYX[0] == (playerLeftYX[1] - i))
             {
-                velocityYX[0] = -velocityYX[0];
-                velocityYX[1] = -i;
+                velocityYX[1] = -velocityYX[0];
+                velocityYX[0] = -i;
+                score++;
+                break;
+            }
+            if (ballYX[0] == playerRightYX[1] && ballYX[0] == (playerRightYX[1] + i))
+            {
+                velocityYX[1] = -velocityYX[0];
+                velocityYX[0] = -i;
+                score++;
+                break;
+            }
+            if (ballYX[0] == playerRightYX[1] && ballYX[0] == (playerRightYX[1] - i))
+            {
+                velocityYX[1] = -velocityYX[0];
+                velocityYX[0] = i;
                 score++;
                 break;
             }
         }
 
-        // Check for border collision (top, left and right)
+        // Check for border collision (top and bottom)
         if (ballYX[0] <= 0)
         {
             velocityYX[0] = -velocityYX[0];
         }
-        if (ballYX[1] <= 0)
+        if (ballYX[0] >= SCREEN_HEIGHT - 1)
         {
-            velocityYX[1] = -velocityYX[1];
-        }
-        if (ballYX[1] >= SCREEN_WIDTH - 1)
-        {
-            velocityYX[1] = -velocityYX[1];
+            velocityYX[0] = -velocityYX[0];
         }
 
         // Move the ball
-        ballYX[0] += velocityYX[0];
-        ballYX[1] += velocityYX[1];
+        //ballYX[0] += velocityYX[0];
+        //ballYX[1] += velocityYX[1];
 
-        // Move the player
-        if ((button_mask_press & BUTTON_LEFT || button_mask_press & BUTTON_D) && playerYX[1] > player_size / 2)
+        // Move the players
+        if ((button_mask_press & BUTTON_UP) && (playerLeftYX[0] > (player_size / 2)))
         {
-            playerYX[1] -= 1;
+            playerLeftYX[0] -= 1;
         }
-        if ((button_mask_press & BUTTON_RIGHT || button_mask_press & BUTTON_C) && playerYX[1] < SCREEN_WIDTH - 1 - (player_size / 2))
+        if ((button_mask_press & BUTTON_DOWN) && (playerLeftYX[0] < SCREEN_HEIGHT - 1 - (player_size / 2)))
         {
-            playerYX[1] += 1;
+            playerLeftYX[0] += 1;
+        }
+        if ((button_mask_press & BUTTON_C) && (playerRightYX[0] > (player_size / 2)))
+        {
+            playerRightYX[0] -= 1;
+        }
+        if ((button_mask_press & BUTTON_A) && (playerRightYX[0] < SCREEN_HEIGHT - 1 - (player_size / 2)))
+        {
+            playerRightYX[0] += 1;
         }
     }
 
     // Check for out of bounds
-    if (ballYX[0] >= SCREEN_HEIGHT)
+    if ((ballYX[1] >= SCREEN_WIDTH) || (ballYX[1] < 0))
     {
         return score;
     }
 
     // Place the ball on the matrix
     matrix[ballYX[0]][ballYX[1]] = 1;
-    // Place the player on the matrix
+    // Place the players on the matrix
     for (int i = 0; i < player_size / 2 + 1; i++)
     {
-        matrix[playerYX[0]][playerYX[1] - i] = 1;
-        matrix[playerYX[0]][playerYX[1] + i] = 1;
+        matrix[playerLeftYX[0] - i][playerLeftYX[1]] = 1;
+        matrix[playerLeftYX[0] + i][playerLeftYX[1]] = 1;
+        matrix[playerRightYX[0] - i][playerRightYX[1]] = 1;
+        matrix[playerRightYX[0] + i][playerRightYX[1]] = 1;
     }
 
     return -1;
