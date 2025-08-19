@@ -157,7 +157,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
             snakeLYX[i][Y] = -1;
             snakeLYX[i][X] = -1;
         }
-        // Set the first 3 LYX in the middle facing down
+        // Set the first 2 LYX in the middle facing down
         snakeLYX[0][0] = 6;
         snakeLYX[0][1] = 7;
         snakeLYX[1][0] = 5;
