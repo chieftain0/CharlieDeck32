@@ -2,6 +2,9 @@
 
 #include <stdlib.h>
 
+#define Y 0
+#define X 1
+
 // Button defines from main.c (remap if needed)
 #define BUTTON_UP (1 << 0)    // 0x01
 #define BUTTON_DOWN (1 << 1)  // 0x02
@@ -151,8 +154,8 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
         // Set all snake LYX to -1
         for (int i = 0; i < SCREEN_HEIGHT * SCREEN_WIDTH; i++)
         {
-            snakeLYX[i][0] = -1;
-            snakeLYX[i][1] = -1;
+            snakeLYX[i][Y] = -1;
+            snakeLYX[i][X] = -1;
         }
         // Set the first 3 LYX in the middle facing down
         snakeLYX[0][0] = 6;
@@ -166,34 +169,34 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
     // If a button is pressed, change the directionYX if it is not forbidden
     if ((button_mask_click & 1) || (button_mask_click & 16)) // UP
     {
-        if (directionYX[0] != 1)
+        if (directionYX[Y] != 1)
         {
-            directionYX[0] = -1;
-            directionYX[1] = 0;
+            directionYX[Y] = -1;
+            directionYX[X] = 0;
         }
     }
     else if ((button_mask_click & 8) || (button_mask_click & 128)) // RIGHT
     {
-        if (directionYX[1] != -1)
+        if (directionYX[X] != -1)
         {
-            directionYX[0] = 0;
-            directionYX[1] = 1;
+            directionYX[Y] = 0;
+            directionYX[X] = 1;
         }
     }
     else if ((button_mask_click & 2) || (button_mask_click & 32)) // DOWN
     {
-        if (directionYX[0] != -1)
+        if (directionYX[Y] != -1)
         {
-            directionYX[0] = 1;
-            directionYX[1] = 0;
+            directionYX[Y] = 1;
+            directionYX[X] = 0;
         }
     }
     else if ((button_mask_click & 4) || (button_mask_click & 64)) // LEFT
     {
-        if (directionYX[1] != 1)
+        if (directionYX[X] != 1)
         {
-            directionYX[0] = 0;
-            directionYX[1] = -1;
+            directionYX[Y] = 0;
+            directionYX[X] = -1;
         }
     }
 
@@ -203,12 +206,12 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
         while (exit_flag == 0)
         {
             exit_flag = 1;
-            foodYX[0] = rand() % 15;
-            foodYX[1] = rand() % 16;
+            foodYX[Y] = rand() % 15;
+            foodYX[X] = rand() % 16;
 
             for (int i = 0; i < length; i++)
             {
-                if (snakeLYX[i][0] == foodYX[0] && snakeLYX[i][1] == foodYX[1])
+                if (snakeLYX[i][0] == foodYX[Y] && snakeLYX[i][1] == foodYX[X])
                 {
                     exit_flag = 0;
                     break;
@@ -227,26 +230,26 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
         clear_screen(matrix);
 
         // Move the snake's head
-        prev_segmentYX[0] = snakeLYX[0][0];
-        prev_segmentYX[1] = snakeLYX[0][1];
-        snakeLYX[0][0] += directionYX[0];
-        snakeLYX[0][1] += directionYX[1];
+        prev_segmentYX[Y] = snakeLYX[Y][0];
+        prev_segmentYX[X] = snakeLYX[Y][1];
+        snakeLYX[Y][0] += directionYX[Y];
+        snakeLYX[Y][1] += directionYX[X];
 
         // Wrap the snake's head
-        snakeLYX[0][0] = (snakeLYX[0][0] + SCREEN_HEIGHT) % SCREEN_HEIGHT;
-        snakeLYX[0][1] = (snakeLYX[0][1] + SCREEN_WIDTH) % SCREEN_WIDTH;
+        snakeLYX[Y][0] = (snakeLYX[Y][0] + SCREEN_HEIGHT) % SCREEN_HEIGHT;
+        snakeLYX[Y][1] = (snakeLYX[Y][1] + SCREEN_WIDTH) % SCREEN_WIDTH;
 
         // Check if snake eats itself
         for (int i = 1; i < length; i++)
         {
-            if (snakeLYX[0][0] == snakeLYX[i][0] && snakeLYX[0][1] == snakeLYX[i][1])
+            if (snakeLYX[Y][0] == snakeLYX[i][0] && snakeLYX[Y][1] == snakeLYX[i][1])
             {
                 return (length - 2);
             }
         }
 
         // Check if food is eaten
-        if (snakeLYX[0][0] == foodYX[0] && snakeLYX[0][1] == foodYX[1])
+        if (snakeLYX[Y][0] == foodYX[Y] && snakeLYX[Y][1] == foodYX[X])
         {
             length++;
             spawn_food = 1;
@@ -256,12 +259,12 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
         for (int i = 1; i < length; i++)
         {
             uint8_t tempYX[2];
-            tempYX[0] = snakeLYX[i][0];
-            tempYX[1] = snakeLYX[i][1];
-            snakeLYX[i][0] = prev_segmentYX[0];
-            snakeLYX[i][1] = prev_segmentYX[1];
-            prev_segmentYX[0] = tempYX[0];
-            prev_segmentYX[1] = tempYX[1];
+            tempYX[Y] = snakeLYX[i][0];
+            tempYX[X] = snakeLYX[i][1];
+            snakeLYX[i][0] = prev_segmentYX[Y];
+            snakeLYX[i][1] = prev_segmentYX[X];
+            prev_segmentYX[Y] = tempYX[Y];
+            prev_segmentYX[X] = tempYX[X];
         }
 
         // Place the snake on the matrix
@@ -271,12 +274,24 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
         }
 
         // Place the food on the matrix
-        matrix[foodYX[0]][foodYX[1]] = 1;
+        matrix[foodYX[Y]][foodYX[X]] = 1;
     }
 
     return -1;
 }
 
+/**
+ * @brief Pong game
+ *
+ * This function implements the game of Pong. It takes a screen matrix (15x16) and the
+ * mask of pressed buttons as input, and returns the score when the game is over.
+ *
+ * @param matrix The screen matrix (15x16)
+ * @param button_mask_press The mask of pressed buttons
+ * @param time_now The current time
+ *
+ * @return The score when the game is over, otherwise -1
+ */
 int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_press, uint32_t time_now)
 {
     static uint32_t prev_time = 0;
@@ -296,8 +311,12 @@ int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_p
         clear_screen(matrix);
 
         // set initial random velocity
-        velocityYX[0] = -1;
-        velocityYX[1] = rand() % 3 - 1;
+        velocityYX[Y] = 0;
+        velocityYX[X] = rand() % 3 - 1;
+        while (velocityYX[X] == 0)
+        {
+            velocityYX[X] = rand() % 3 - 1;
+        }
 
         first_time_running = 0;
     }
@@ -312,84 +331,84 @@ int Play_Pong(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_p
         // Check for player collisions
         for (int i = 0; i < player_size / 2 + 1; i++)
         {
-            if (ballYX[0] == playerLeftYX[1] && ballYX[0] == (playerLeftYX[1] + i))
+            if (ballYX[X] == playerLeftYX[X] && ballYX[Y] == (playerLeftYX[Y] + i))
             {
-                velocityYX[1] = -velocityYX[0];
-                velocityYX[0] = i;
+                velocityYX[X] = -velocityYX[X];
+                velocityYX[Y] = i;
                 score++;
                 break;
             }
-            if (ballYX[0] == playerLeftYX[1] && ballYX[0] == (playerLeftYX[1] - i))
+            if (ballYX[X] == playerLeftYX[X] && ballYX[Y] == (playerLeftYX[Y] - i))
             {
-                velocityYX[1] = -velocityYX[0];
-                velocityYX[0] = -i;
+                velocityYX[X] = -velocityYX[X];
+                velocityYX[Y] = -i;
                 score++;
                 break;
             }
-            if (ballYX[0] == playerRightYX[1] && ballYX[0] == (playerRightYX[1] + i))
+            if (ballYX[X] == playerRightYX[X] && ballYX[Y] == (playerRightYX[Y] + i))
             {
-                velocityYX[1] = -velocityYX[0];
-                velocityYX[0] = -i;
+                velocityYX[X] = -velocityYX[X];
+                velocityYX[Y] = i;
                 score++;
                 break;
             }
-            if (ballYX[0] == playerRightYX[1] && ballYX[0] == (playerRightYX[1] - i))
+            if (ballYX[X] == playerRightYX[X] && ballYX[Y] == (playerRightYX[Y] - i))
             {
-                velocityYX[1] = -velocityYX[0];
-                velocityYX[0] = i;
+                velocityYX[X] = -velocityYX[X];
+                velocityYX[Y] = -i;
                 score++;
                 break;
             }
         }
 
         // Check for border collision (top and bottom)
-        if (ballYX[0] <= 0)
+        if (ballYX[Y] <= 0)
         {
-            velocityYX[0] = -velocityYX[0];
+            velocityYX[Y] = -velocityYX[Y];
         }
-        if (ballYX[0] >= SCREEN_HEIGHT - 1)
+        if (ballYX[Y] >= SCREEN_HEIGHT - 1)
         {
-            velocityYX[0] = -velocityYX[0];
+            velocityYX[Y] = -velocityYX[Y];
         }
 
         // Move the ball
-        //ballYX[0] += velocityYX[0];
-        //ballYX[1] += velocityYX[1];
+        ballYX[Y] += velocityYX[Y];
+        ballYX[X] += velocityYX[X];
 
         // Move the players
-        if ((button_mask_press & BUTTON_UP) && (playerLeftYX[0] > (player_size / 2)))
+        if ((button_mask_press & BUTTON_UP) && (playerLeftYX[Y] > (player_size / 2)))
         {
-            playerLeftYX[0] -= 1;
+            playerLeftYX[Y] -= 1;
         }
-        if ((button_mask_press & BUTTON_DOWN) && (playerLeftYX[0] < SCREEN_HEIGHT - 1 - (player_size / 2)))
+        if ((button_mask_press & BUTTON_DOWN) && (playerLeftYX[Y] < SCREEN_HEIGHT - 1 - (player_size / 2)))
         {
-            playerLeftYX[0] += 1;
+            playerLeftYX[Y] += 1;
         }
-        if ((button_mask_press & BUTTON_C) && (playerRightYX[0] > (player_size / 2)))
+        if ((button_mask_press & BUTTON_C) && (playerRightYX[Y] > (player_size / 2)))
         {
-            playerRightYX[0] -= 1;
+            playerRightYX[Y] -= 1;
         }
-        if ((button_mask_press & BUTTON_A) && (playerRightYX[0] < SCREEN_HEIGHT - 1 - (player_size / 2)))
+        if ((button_mask_press & BUTTON_A) && (playerRightYX[Y] < SCREEN_HEIGHT - 1 - (player_size / 2)))
         {
-            playerRightYX[0] += 1;
+            playerRightYX[Y] += 1;
         }
     }
 
     // Check for out of bounds
-    if ((ballYX[1] >= SCREEN_WIDTH) || (ballYX[1] < 0))
+    if ((ballYX[X] >= SCREEN_WIDTH) || (ballYX[X] < 0))
     {
         return score;
     }
 
     // Place the ball on the matrix
-    matrix[ballYX[0]][ballYX[1]] = 1;
+    matrix[ballYX[Y]][ballYX[X]] = 1;
     // Place the players on the matrix
     for (int i = 0; i < player_size / 2 + 1; i++)
     {
-        matrix[playerLeftYX[0] - i][playerLeftYX[1]] = 1;
-        matrix[playerLeftYX[0] + i][playerLeftYX[1]] = 1;
-        matrix[playerRightYX[0] - i][playerRightYX[1]] = 1;
-        matrix[playerRightYX[0] + i][playerRightYX[1]] = 1;
+        matrix[playerLeftYX[Y] - i][playerLeftYX[X]] = 1;
+        matrix[playerLeftYX[Y] + i][playerLeftYX[X]] = 1;
+        matrix[playerRightYX[Y] - i][playerRightYX[X]] = 1;
+        matrix[playerRightYX[Y] + i][playerRightYX[X]] = 1;
     }
 
     return -1;
@@ -421,7 +440,7 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
     static int count = 0;
     static int score = -3;
 
-    static int bird_yx[2] = {7, 2};
+    static int birdYX[2] = {7, 2};
 
     static uint8_t jump_requested = 0;
     if (button_mask_click)
@@ -434,7 +453,7 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
         prev_time = time_now;
 
         // Remove the bird for now
-        matrix[bird_yx[0]][bird_yx[1]] = 0;
+        matrix[birdYX[Y]][birdYX[X]] = 0;
 
         // Shift the entire screen to the left
         for (int i = 0; i < SCREEN_HEIGHT; i++)
@@ -477,24 +496,24 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
             velocity += GRAVITY;
         }
 
-        bird_yx[0] -= velocity; // Subtract velocity since indexes are reversed
-        if (bird_yx[0] > SCREEN_HEIGHT - 1)
+        birdYX[Y] -= velocity; // Subtract velocity since indexes are reversed
+        if (birdYX[Y] > SCREEN_HEIGHT - 1)
         {
-            bird_yx[0] = SCREEN_HEIGHT - 1;
+            birdYX[Y] = SCREEN_HEIGHT - 1;
         }
-        if (bird_yx[0] < 0)
+        if (birdYX[Y] < 0)
         {
-            bird_yx[0] = 0;
+            birdYX[Y] = 0;
         }
 
-        if (matrix[bird_yx[0]][bird_yx[1]] == 1)
+        if (matrix[birdYX[Y]][birdYX[X]] == 1)
         {
             // Collision detected
             return score;
         }
 
         // Apply the bird
-        matrix[bird_yx[0]][bird_yx[1]] = 1;
+        matrix[birdYX[Y]][birdYX[X]] = 1;
     }
 
     return -4;
@@ -502,11 +521,14 @@ int Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
 
 int Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_click)
 {
-    for (int i = 0; i < SCREEN_HEIGHT; i++)
+    if (button_mask_click)
     {
-        for (int j = 0; j < SCREEN_WIDTH; j++)
+        for (int i = 0; i < SCREEN_HEIGHT; i++)
         {
-            matrix[i][j] = heart_matrix[i][j];
+            for (int j = 0; j < SCREEN_WIDTH; j++)
+            {
+                matrix[i][j] = heart_matrix[i][j];
+            }
         }
     }
     return 0;
