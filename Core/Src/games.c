@@ -167,7 +167,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
     }
 
     // If a button is pressed, change the directionYX if it is not forbidden
-    if ((button_mask_click & 1) || (button_mask_click & 16)) // UP
+    if ((button_mask_click & BUTTON_UP) || (button_mask_click & BUTTON_C)) // UP
     {
         if (directionYX[Y] != 1)
         {
@@ -175,7 +175,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
             directionYX[X] = 0;
         }
     }
-    else if ((button_mask_click & 8) || (button_mask_click & 128)) // RIGHT
+    else if ((button_mask_click & BUTTON_RIGHT) || (button_mask_click & BUTTON_B)) // RIGHT
     {
         if (directionYX[X] != -1)
         {
@@ -183,7 +183,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
             directionYX[X] = 1;
         }
     }
-    else if ((button_mask_click & 2) || (button_mask_click & 32)) // DOWN
+    else if ((button_mask_click & BUTTON_DOWN) || (button_mask_click & BUTTON_A)) // DOWN
     {
         if (directionYX[Y] != -1)
         {
@@ -191,7 +191,7 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
             directionYX[X] = 0;
         }
     }
-    else if ((button_mask_click & 4) || (button_mask_click & 64)) // LEFT
+    else if ((button_mask_click & BUTTON_LEFT) || (button_mask_click & BUTTON_D)) // LEFT
     {
         if (directionYX[X] != 1)
         {
