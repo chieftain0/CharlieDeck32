@@ -5,6 +5,14 @@
 #define Y 0
 #define X 1
 
+#ifndef SCREEN_WIDTH
+#define SCREEN_WIDTH 16
+#endif
+
+#ifndef SCREEN_HEIGHT
+#define SCREEN_HEIGHT 15
+#endif
+
 // Button defines from main.c (remap if needed)
 #define BUTTON_UP (1 << 0)    // 0x01
 #define BUTTON_DOWN (1 << 1)  // 0x02
@@ -42,7 +50,7 @@
 
 uint8_t digit_matrices[10][5][3] = {N0, N1, N2, N3, N4, N5, N6, N7, N8, N9};
 
-uint8_t menu_matrix[15][16] = {
+uint8_t menu_matrix[SCREEN_HEIGHT][SCREEN_WIDTH] = {
     {1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1},
     {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
     {1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1},
@@ -59,7 +67,7 @@ uint8_t menu_matrix[15][16] = {
     {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1},
     {1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1}};
 
-uint8_t score_matrix[15][16] = {
+uint8_t score_matrix[SCREEN_HEIGHT][SCREEN_WIDTH] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0},
     {0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0},
@@ -76,7 +84,7 @@ uint8_t score_matrix[15][16] = {
     {0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
-uint8_t heart_matrix[15][16] = {
+uint8_t heart_matrix[SCREEN_HEIGHT][SCREEN_WIDTH] = {
     {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0},
     {0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0},
     {0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0},
@@ -93,7 +101,7 @@ uint8_t heart_matrix[15][16] = {
     {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}};
 
-uint8_t smile_matrix[15][16] = {
+uint8_t smile_matrix[SCREEN_HEIGHT][SCREEN_WIDTH] = {
     {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
     {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
     {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
@@ -206,8 +214,8 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
         while (exit_flag == 0)
         {
             exit_flag = 1;
-            foodYX[Y] = rand() % 15;
-            foodYX[X] = rand() % 16;
+            foodYX[Y] = rand() % SCREEN_HEIGHT;
+            foodYX[X] = rand() % SCREEN_WIDTH;
 
             for (int i = 0; i < length; i++)
             {
