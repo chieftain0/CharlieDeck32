@@ -41,8 +41,6 @@ void Charlieplex_Clear(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int 
  *              - 0: Turn the LED off.
  *
  * @note The indexes start at 0. Ensure that the number of ports matches the number of pins.
- *       This function will configure the pins as outputs to set the LED state to ON,
- *       and as inputs to set the LED state to OFF.
  */
 void Charlieplex_SetLED(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int num_pins, int x, int y, uint8_t state)
 {
@@ -116,6 +114,15 @@ void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, in
     }
 }
 
+/**
+ * @brief Delay for a given amount of microseconds using the TIM1 counter.
+ *
+ * @note This function is blocking and must not be used in interrupt context.
+ * @param us Time in microseconds to delay.
+ *
+ * @warning This function does not overflow check the counter. Ensure that the delay
+ *          requested is not so long that the counter will overflow during the delay.
+ */
 void Delay_us(uint32_t us)
 {
     uint32_t start = TIM1->CNT;
