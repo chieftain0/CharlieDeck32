@@ -29,13 +29,11 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
 
 * [Git](https://git-scm.com/downloads)
 
-* Optional: [MSYS2](https://www.msys2.org/) for Windows
+* **Optional**: [MSYS2](https://www.msys2.org/)
 
-* Compile toolchains:
+* Compile toolchains: [MinGW-W64](https://github.com/niXman/mingw-builds-binaries/releases) and [Ninja](https://github.com/ninja-build/ninja/releases)
 
-  * For Windows: [MinGW-W64](https://github.com/niXman/mingw-builds-binaries/releases) & [Ninja](https://github.com/ninja-build/ninja/releases)
-
-    MSYS2 (MinGW64):
+  * For Windows MSYS2 (MinGW64):
 
     ```bash
     pacman -S mingw-w64-x86_64-gcc 
