@@ -58,6 +58,21 @@ cd ..
 cd Release
 cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ../..
 mingw32-make
+
+# --- Leave the build directory ---
+cd ../..
+```
+
+### Executable
+
+The build commands will produce a `CharlieDeck32.elf` file in the `CharlieDeck32/bin/Release` and `CharlieDeck32/bin/Debug` directories.
+
+```bash
+binwalk -e bin/Release/CharlieDeck32.elf
+```
+
+```bash
+binwalk -e bin/Debug/CharlieDeck32.elf
 ```
 
 ### Flashing
