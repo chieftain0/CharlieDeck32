@@ -27,21 +27,19 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
 
 ### Prerequisites
 
-* [STM32CubeCLT](https://www.st.com/en/development-tools/STM32CubeCLT)
+* [Git](https://git-scm.com/downloads)
 
-  * Contains the `arm-none-eabi-gcc` and `arm-none-eabi-g++` compilers
-  * STM32CubeCLT is recommended but Linux users can get away with
-
-    ```bash
-    sudo apt update
-    sudo apt install gcc-arm-none-eabi gdb-arm-none-eabi
-    ```
-
-* [CMake](https://cmake.org/download/)
+* Optional: [MSYS2](https://www.msys2.org/) for Windows
 
 * Compile toolchains:
 
-  * Windows: [MinGW-W64](https://github.com/niXman/mingw-builds-binaries/releases)
+  * For Windows: [MinGW-W64](https://github.com/niXman/mingw-builds-binaries/releases)
+
+    MSYS2 (MinGW64):
+
+    ```bash
+    pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb
+    ```
 
   * Linux:
 
@@ -50,7 +48,35 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
     sudo apt install build-essential
     ```
 
-* Optional for further development: STM32CubeMX
+* [STM32CubeCLT](https://www.st.com/en/development-tools/STM32CubeCLT)
+
+  * Contains the `arm-none-eabi-gcc` and `arm-none-eabi-g++` compilers which can be installed separately (see below). Nevertheless, STM32CubeCLT is strongly recommended.
+  * For Windows MSYS2 (MinGW64):
+
+    ```bash
+    pacman -S mingw-w64-x86_64-arm-none-eabi-gcc mingw-w64-x86_64-arm-none-eabi-gdb
+    ```
+
+  * For Linux:
+
+    ```bash
+    sudo apt install gcc-arm-none-eabi gdb-arm-none-eabi
+    ```
+  
+* [CMake](https://cmake.org/download/)
+  * For Windows MSYS2 (MinGW64):
+
+    ```bash
+    pacman -S mingw-w64-x86_64-cmake
+    ```
+
+  * For Linux:
+
+    ```bash
+    sudo apt install cmake
+    ```
+
+* **Optional** for further development: [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx)
 
 ### Building
 
