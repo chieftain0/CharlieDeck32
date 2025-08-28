@@ -10,7 +10,7 @@
 
 void SystemClock_Config(void);
 void Poll_Buttons(GPIO_TypeDef **ButtonPorts, uint16_t *ButtonPins, uint8_t NumButtons, uint8_t PressState, uint8_t *clickMap, uint8_t *pressMap);
-static inline void seed_rng()
+static inline void seed_rng();
 
 // USB variables
 GPIO_TypeDef *usb_enum_pin_port = GPIOA;

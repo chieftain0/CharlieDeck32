@@ -10,6 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Delete previous workflow runs
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CURRENT_RUN_ID: ${{ github.run_id }}
+      run: |
+        echo "Deleting previous completed runs for this workflow..."
+        runs=$(curl -s \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github+json" \
+          "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?workflow_id=${{ github.workflow }}&status=completed" \
+          | jq '.workflow_runs[] | select(.id != '"$CURRENT_RUN_ID"') | .id')
+
+        for run_id in $runs; do
+          echo "Deleting run $run_id"
+          curl -X DELETE \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/$run_id"
+        done
+
     - name: Checkout repo
       uses: actions/checkout@v4
 
@@ -28,4 +48,3 @@ jobs:
       run: |
         cd build/Release
         ninja
-
