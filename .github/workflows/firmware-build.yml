@@ -1,4 +1,4 @@
-name: Build firmware
+name: Firmware Build
 
 permissions:
   actions: write  
@@ -33,22 +33,22 @@ jobs:
         cd build/Release
         ninja
 
-    - name: Delete previous workflow runs
+    - name: Delete all previous workflow runs
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CURRENT_RUN_ID: ${{ github.run_id }}
       run: |
         sudo apt-get update && sudo apt-get install -y jq
-        echo "Deleting previous completed runs..."
+        echo "Deleting all previous completed workflow runs..."
+        
         runs=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github+json" \
           "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs?status=completed" \
-          | jq '.workflow_runs[] | select(.name=="Build firmware") | select(.id != '"$CURRENT_RUN_ID"') | .id')
-
+          | jq '.workflow_runs[] | select(.id != '"$CURRENT_RUN_ID"') | .id')
+        
         for run_id in $runs; do
           echo "Deleting run $run_id"
           curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$run_id"
         done
-
