@@ -41,7 +41,7 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
     pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb
     ```
 
-  * Linux:
+  * For Linux:
 
     ```bash
     sudo apt update
