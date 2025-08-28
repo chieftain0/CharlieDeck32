@@ -27,39 +27,65 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
 
 ### Prerequisites
 
-* CMake
-* MinGW
-* SWD programmer (ST-Link, etc.)
-* Optional: STM32 development toolchain (STM32CubeMX + HAL) for further development
+* [STM32CubeCLT](https://www.st.com/en/development-tools/STM32CubeCLT)
 
-### Building (using CMake and MinGW)
+  * Contains the `arm-none-eabi-gcc` and `arm-none-eabi-g++` compilers
+  * STM32CubeCLT is recommended but Linux users can get away with
+
+    ```bash
+    sudo apt update
+    sudo apt install gcc-arm-none-eabi gdb-arm-none-eabi
+    ```
+
+* [CMake](https://cmake.org/download/)
+
+* Compile toolchains:
+
+  * Windows: [MinGW-W64](https://github.com/niXman/mingw-builds-binaries/releases)
+
+  * Linux:
+
+    ```bash
+    sudo apt update
+    sudo apt install build-essential
+    ```
+
+* Optional for further development: STM32CubeMX
+
+### Building
 
 ```bash
-# --- Clone the repo and navigate into it ---
+# Clone the repo and navigate into it 
 git clone https://github.com/chieftain0/CharlieDeck32.git
 cd CharlieDeck32
 
-# --- Create a build directory and navigate into it ---
+# Create a build directory and navigate into it 
 mkdir build
 cd build
 
-# --- Create a separate Debug and Release build directories ---
+# Create a separate Debug and Release build directories 
 mkdir Debug & mkdir Release
 
-# --- Debug build ---
 cd Debug
-cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug ../..
+# For Windows with MinGW:
+cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug ../.. 
+# For Linux:
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug ../.. 
+# Build Debug build
 mingw32-make
 
-# --- Leave the Debug build directory ---
+# Leave the Debug build directory 
 cd ..
 
-# --- Release build ---
 cd Release
+# For Windows with MinGW:
 cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ../..
+# For Linux:
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ../..
+# Build Release build
 mingw32-make
 
-# --- Leave the build directory ---
+# Leave the build directory 
 cd ../..
 ```
 
@@ -77,7 +103,7 @@ binwalk -e bin/Debug/CharlieDeck32.elf
 
 ### Flashing
 
-* Connect your programmer (ST-Link, etc.)
+* Connect your SWD programmer (ST-Link, etc.)
 * Flash the firmware using your preferred method:
 
     ```bash
