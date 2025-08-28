@@ -1,5 +1,9 @@
 name: Build firmware
 
+permissions:
+  actions: write  
+  contents: read  
+
 on:
   push:
     branches: [ main ]
