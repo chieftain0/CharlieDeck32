@@ -44,7 +44,7 @@ jobs:
     - name: Update Flash badge
       uses: schneegans/dynamic-badges-action@v1.7.0
       with:
-        auth: ${{ secrets.GITHUB_TOKEN }}
+        auth: ${{ secrets.GIST_SECRET }}
         gistID: 6cc8fd238ebd6d95440ecd185cc81d92
         filename: flash.json
         label: Flash
@@ -54,7 +54,7 @@ jobs:
     - name: Update RAM badge
       uses: schneegans/dynamic-badges-action@v1.7.0
       with:
-        auth: ${{ secrets.GITHUB_TOKEN }}
+        auth: ${{ secrets.GIST_SECRET }}
         gistID: 2f1f97da51555cb59b58152bc5ffe392
         filename: ram.json
         label: RAM
