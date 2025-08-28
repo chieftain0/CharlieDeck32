@@ -80,40 +80,61 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
 
 ### Building
 
-```bash
-# Clone the repo and navigate into it 
-git clone https://github.com/chieftain0/CharlieDeck32.git
-cd CharlieDeck32
+* Clone the repo and navigate into it
 
-# Create a build directory and navigate into it 
-mkdir build
-cd build
+  ```bash
+  git clone https://github.com/chieftain0/CharlieDeck32.git
+  cd CharlieDeck32
+  ```
 
-# Create a separate Debug and Release build directories 
-mkdir Debug & mkdir Release
+* Create a build directory and navigate into it
 
-cd Debug
-# For Windows with MinGW:
-cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug ../.. 
-# For Linux:
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug ../.. 
-# Build Debug build
-mingw32-make
+  ```bash
+  mkdir build & cd build
+  ```
 
-# Leave the Debug build directory 
-cd ..
+* Create separate Debug and Release build directories
 
-cd Release
-# For Windows with MinGW:
-cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ../..
-# For Linux:
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ../..
-# Build Release build
-mingw32-make
+  ```bash
+  mkdir Debug & mkdir Release
+  ```
 
-# Leave the build directory 
-cd ../..
-```
+* Navigate into the Debug build directory and build the project
+
+  ```bash
+  cd Debug
+
+  # For Windows with MinGW:
+  cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug ../.. 
+  # For Linux:
+  cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug ../.. 
+  
+  # Build Debug build
+  mingw32-make
+  ```
+
+* Leave the Debug build directory
+
+  ```bash
+  cd ..
+  ```
+
+* Navigate into the Release build directory and build the project
+
+  ```bash
+  cd Release
+
+  # For Windows with MinGW:
+  cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ../..
+  # For Linux:
+  cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ../..
+  
+  # Build Release build
+  mingw32-make
+
+  # Leave the build directory 
+  cd ../..
+  ```
 
 ### Executable
 
