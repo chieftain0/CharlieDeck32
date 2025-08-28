@@ -33,19 +33,21 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
 
 * Compile toolchains:
 
-  * For Windows: [MinGW-W64](https://github.com/niXman/mingw-builds-binaries/releases)
+  * For Windows: [MinGW-W64](https://github.com/niXman/mingw-builds-binaries/releases) & [Ninja](https://github.com/ninja-build/ninja/releases)
 
     MSYS2 (MinGW64):
 
     ```bash
-    pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb
+    pacman -S mingw-w64-x86_64-gcc 
+    pacman -S mingw-w64-x86_64-gdb
+    pacman -S mingw-w64-x86_64-ninja
     ```
 
   * For Linux:
 
     ```bash
-    sudo apt update
     sudo apt install build-essential
+    sudo apt install ninja-build
     ```
 
 * [STM32CubeCLT](https://www.st.com/en/development-tools/STM32CubeCLT)
@@ -54,13 +56,15 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
   * For Windows MSYS2 (MinGW64):
 
     ```bash
-    pacman -S mingw-w64-x86_64-arm-none-eabi-gcc mingw-w64-x86_64-arm-none-eabi-gdb
+    pacman -S mingw-w64-x86_64-arm-none-eabi-gcc
+    pacman -S mingw-w64-x86_64-arm-none-eabi-gdb
     ```
 
   * For Linux:
 
     ```bash
-    sudo apt install gcc-arm-none-eabi gdb-arm-none-eabi
+    sudo apt install gcc-arm-none-eabi
+    sudo apt install gdb-arm-none-eabi
     ```
   
 * [CMake](https://cmake.org/download/)
@@ -104,13 +108,11 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
   ```bash
   cd Debug
 
-  # For Windows with MinGW:
-  cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug ../.. 
-  # For Linux:
-  cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug ../.. 
-  
-  # Build Debug build
-  mingw32-make
+  # Configure the project
+  cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug ../.. 
+
+  # Build the project
+  ninja
   ```
 
 * Leave the Debug build directory
@@ -124,13 +126,11 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
   ```bash
   cd Release
 
-  # For Windows with MinGW:
-  cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ../..
-  # For Linux:
-  cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ../..
-  
-  # Build Release build
-  mingw32-make
+  # Configure the project
+  cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release ../..
+
+  # Build the project
+  ninja
 
   # Leave the build directory 
   cd ../..
