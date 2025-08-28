@@ -136,14 +136,14 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
 
 ### Executable
 
-The build commands will produce a `CharlieDeck32.elf` file in the `CharlieDeck32/bin/Release` and `CharlieDeck32/bin/Debug` directories.
+The build commands will produce a `CharlieDeck32.elf` file in the `CharlieDeck32/bin/Debug` and `CharlieDeck32/bin/Release` directories.
 
 ```bash
-binwalk -e bin/Release/CharlieDeck32.elf
+arm-none-eabi-objdump -f bin/Debug/CharlieDeck32.elf
 ```
 
 ```bash
-binwalk -e bin/Debug/CharlieDeck32.elf
+arm-none-eabi-objdump -f bin/Release/CharlieDeck32.elf
 ```
 
 ### Flashing
