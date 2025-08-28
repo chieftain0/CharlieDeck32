@@ -37,11 +37,6 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
-# Set the output directory
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
-)
-
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
