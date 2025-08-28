@@ -29,34 +29,3 @@ jobs:
         cd build/Release
         ninja
 
-    - name: Get size info
-      id: size
-      run: |
-        cd build/Release
-        # Extract Flash (text+data) and RAM (data+bss) usage
-        FLASH=$(arm-none-eabi-size -A CharlieDeck32.elf | awk '/\.text/ {t=$2} /\.data/ {d=$2} END {print t+d}')
-        RAM=$(arm-none-eabi-size -A CharlieDeck32.elf | awk '/\.data/ {d=$2} /\.bss/ {b=$2} END {print d+b}')
-        echo "FLASH=$FLASH" >> $GITHUB_ENV
-        echo "RAM=$RAM" >> $GITHUB_ENV
-        echo "Flash: $FLASH bytes"
-        echo "RAM:   $RAM bytes"
-
-    - name: Update Flash badge
-      uses: schneegans/dynamic-badges-action@v1.7.0
-      with:
-        auth: ${{ secrets.GIST_SECRET }}
-        gistID: 6cc8fd238ebd6d95440ecd185cc81d92
-        filename: flash.json
-        label: Flash
-        message: "${{ env.FLASH }} bytes"
-        color: blue
-
-    - name: Update RAM badge
-      uses: schneegans/dynamic-badges-action@v1.7.0
-      with:
-        auth: ${{ secrets.GIST_SECRET }}
-        gistID: 2f1f97da51555cb59b58152bc5ffe392
-        filename: ram.json
-        label: RAM
-        message: "${{ env.RAM }} bytes"
-        color: green
