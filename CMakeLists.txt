@@ -37,6 +37,16 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
+# ----------------------------
+# Place ELF/executable into bin/<BuildType> folder
+# ----------------------------
+set(BIN_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE}")
+file(MAKE_DIRECTORY ${BIN_OUTPUT_DIR})
+set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${BIN_OUTPUT_DIR}
+    OUTPUT_NAME ${CMAKE_PROJECT_NAME}
+)
+
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
