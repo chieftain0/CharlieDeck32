@@ -1,5 +1,8 @@
 # CharlieDeck32
 
+![Flash](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/chieftain0/6cc8fd238ebd6d95440ecd185cc81d92/raw/flash.json)
+![RAM](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/chieftain0/2f1f97da51555cb59b58152bc5ffe392/raw/ram.json)
+
 A minimalist handheld console powered by an STM32 microcontroller and a Charlieplexed LED matrix, capable of running retro-style games like Flappy Bird, Snake, Pong and Tetris.
 
 ## Table of Contents
