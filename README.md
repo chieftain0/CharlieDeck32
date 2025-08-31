@@ -174,4 +174,4 @@ arm-none-eabi-objdump -f bin/Release/CharlieDeck32.elf
 
 ## License
 
-This project is licensed under the **GPL-3.0** license.
+This project is licensed under the [**GPL-3.0** license](LICENSE).
