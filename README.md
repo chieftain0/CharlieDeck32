@@ -168,7 +168,6 @@ arm-none-eabi-objdump -f bin/Release/CharlieDeck32.elf
 
 ## Project Roadmap & TODOs
 
-* Make Snake food spawning non-blocking.  
 * Make LED display function non-blocking.  
 * Program the Tetris game.
 

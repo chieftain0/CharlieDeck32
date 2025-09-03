@@ -177,23 +177,18 @@ int Play_Snake(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_
     // Spawn food if needed
     if (spawn_food == 1)
     {
-        uint8_t exit_flag = 0;
-        while (exit_flag == 0)
+        uint8_t foodY_temp = rand() % SCREEN_HEIGHT;
+        uint8_t foodX_temp = rand() % SCREEN_WIDTH;
+        for (int i = 0; i < length; i++)
         {
-            exit_flag = 1;
-            foodYX[Y] = rand() % SCREEN_HEIGHT;
-            foodYX[X] = rand() % SCREEN_WIDTH;
-
-            for (int i = 0; i < length; i++)
+            if (snakeLYX[i][0] == foodY_temp && snakeLYX[i][1] == foodX_temp)
             {
-                if (snakeLYX[i][0] == foodYX[Y] && snakeLYX[i][1] == foodYX[X])
-                {
-                    exit_flag = 0;
-                    break;
-                }
+                return -1;
             }
         }
 
+        foodYX[Y] = foodY_temp;
+        foodYX[X] = foodX_temp;
         spawn_food = 0;
     }
 
