@@ -171,7 +171,7 @@ int main(void)
     case MODE_TETRIS:
       Play_Tetris(screen, click_mask);
       break;
-    case 5:
+    case MODE_SCORE:
       if (HAL_GetTick() - time_now < 3000)
       {
         ScoreMatrix(screen, score);
