@@ -23,7 +23,7 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
 
 ## Hardware Overview
 
-**DIAGRAM HERE**
+DIAGRAM HERE
 
 ## Software & Build Instructions
 
@@ -38,16 +38,13 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
   * For Windows MSYS2 (MinGW64):
 
     ```bash
-    pacman -S mingw-w64-x86_64-gcc 
-    pacman -S mingw-w64-x86_64-gdb
-    pacman -S mingw-w64-x86_64-ninja
+    pacman -S --needed mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb mingw-w64-x86_64-ninja -y
     ```
 
   * For Linux:
 
     ```bash
-    sudo apt install build-essential
-    sudo apt install ninja-build
+    sudo apt install build-essential ninja-build -y
     ```
 
 * [STM32CubeCLT](https://www.st.com/en/development-tools/STM32CubeCLT)
@@ -56,28 +53,26 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
   * For Windows MSYS2 (MinGW64):
 
     ```bash
-    pacman -S mingw-w64-x86_64-arm-none-eabi-gcc
-    pacman -S mingw-w64-x86_64-arm-none-eabi-gdb
+    pacman -S --needed mingw-w64-x86_64-arm-none-eabi-gcc mingw-w64-x86_64-arm-none-eabi-gdb -y
     ```
 
   * For Linux:
 
     ```bash
-    sudo apt install gcc-arm-none-eabi
-    sudo apt install gdb-arm-none-eabi
+    sudo apt install gcc-arm-none-eabi gdb-arm-none-eabi -y
     ```
   
 * [CMake](https://cmake.org/download/)
   * For Windows MSYS2 (MinGW64):
 
     ```bash
-    pacman -S mingw-w64-x86_64-cmake
+    pacman -S --needed mingw-w64-x86_64-cmake -y
     ```
 
   * For Linux:
 
     ```bash
-    sudo apt install cmake
+    sudo apt install cmake -y
     ```
 
 * **Optional** for further development: [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx)
