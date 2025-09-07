@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi cmake ninja-build
+        sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi cmake ninja-build jq
 
     - name: Configure (CMake + Ninja)
       run: |
@@ -38,16 +38,12 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CURRENT_RUN_ID: ${{ github.run_id }}
       run: |
-        sudo apt-get update && sudo apt-get install -y jq
-        echo "Deleting all previous workflow runs..."
-        
         runs=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github+json" \
           "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs" \
           | jq '.workflow_runs[] | select(.id != '"$CURRENT_RUN_ID"') | .id')
         
         for run_id in $runs; do
-          echo "Deleting run $run_id"
           curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$run_id"
