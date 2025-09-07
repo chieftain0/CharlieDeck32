@@ -47,9 +47,10 @@ DIAGRAM HERE
     sudo apt install build-essential ninja-build -y
     ```
 
-* [STM32CubeCLT](https://www.st.com/en/development-tools/STM32CubeCLT)
+* [ARM None EABI Toolchain](https://developer.arm.com/downloads/-/gnu-rm)
 
-  * Contains the `arm-none-eabi-gcc` and `arm-none-eabi-g++` compilers which can be installed separately (see below). Nevertheless, STM32CubeCLT is strongly recommended.
+  * [STM32CubeCLT](https://www.st.com/en/development-tools/stm32cubeclt.html) contains `arm-none-eabi-gcc` and `arm-none-eabi-gdb` and is strongly recommended for further development.
+  
   * For Windows MSYS2 (MinGW64):
 
     ```bash
