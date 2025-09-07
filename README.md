@@ -87,49 +87,24 @@ DIAGRAM HERE
   cd CharlieDeck32
   ```
 
-* Create a build directory and navigate into it
+* Build the Debug version of the project
 
   ```bash
-  mkdir build & cd build
-  ```
-
-* Create separate Debug and Release build directories
-
-  ```bash
-  mkdir Debug & mkdir Release
-  ```
-
-* Navigate into the Debug build directory and build the project
-
-  ```bash
-  cd Debug
-
-  # Configure the project
-  cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug ../.. 
+  # Configure build files
+  cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -B build/Debug
 
   # Build the project
-  ninja
+  ninja -C build/Debug
   ```
 
-* Leave the Debug build directory
+* Build the Release version of the project
 
   ```bash
-  cd ..
-  ```
-
-* Navigate into the Release build directory and build the project
-
-  ```bash
-  cd Release
-
   # Configure the project
-  cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release ../..
+  cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -B build/Release
 
   # Build the project
-  ninja
-
-  # Leave the build directory 
-  cd ../..
+  ninja -C build/Release
   ```
 
 ### Executable
