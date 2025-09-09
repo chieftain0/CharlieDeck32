@@ -38,7 +38,7 @@ DIAGRAM HERE
   * For Windows MSYS2 (MinGW64):
 
     ```bash
-    pacman -S --needed mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb mingw-w64-x86_64-ninja -y
+    pacman -S --needed --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb mingw-w64-x86_64-ninja
     ```
 
   * For Linux:
@@ -54,7 +54,7 @@ DIAGRAM HERE
   * For Windows MSYS2 (MinGW64):
 
     ```bash
-    pacman -S --needed mingw-w64-x86_64-arm-none-eabi-gcc mingw-w64-x86_64-arm-none-eabi-gdb -y
+    pacman -S --needed --noconfirm mingw-w64-x86_64-arm-none-eabi-gcc mingw-w64-x86_64-arm-none-eabi-gdb
     ```
 
   * For Linux:
@@ -67,7 +67,7 @@ DIAGRAM HERE
   * For Windows MSYS2 (MinGW64):
 
     ```bash
-    pacman -S --needed mingw-w64-x86_64-cmake -y
+    pacman -S --needed --noconfirm mingw-w64-x86_64-cmake
     ```
 
   * For Linux:
@@ -139,7 +139,8 @@ arm-none-eabi-objdump -f bin/Release/CharlieDeck32.elf
 
 ## Project Roadmap & TODOs
 
-* Make LED display function non-blocking.  
+* Make LED display function non-blocking.
+  * FreeRTOS?
 * Program the Tetris game.
 
 ## License
