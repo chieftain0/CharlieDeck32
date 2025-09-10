@@ -22,16 +22,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y gcc-arm-none-eabi cmake ninja-build jq
 
-    - name: Configure (CMake + Ninja)
+    - name: Build (CMake + Ninja)
       run: |
-        mkdir -p build/Release
-        cd build/Release
-        cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release ../..
-
-    - name: Build
-      run: |
-        cd build/Release
-        ninja
+        cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -B build/Release
+        ninja -C build/Release
 
     - name: Delete all previous workflow runs
       env:
