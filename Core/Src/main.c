@@ -35,7 +35,7 @@ uint16_t matrix_pins[] = {
 
 uint8_t screen[NUM_ROWS_Y][NUM_COLUMNS_X] = {0};
 
-// Button variables (External pull-up up)
+// Button variables (External pull-up)
 static GPIO_TypeDef *button_ports[8] = {
     GPIOB, // 1 = UP
     GPIOB, // 2 = DOWN
