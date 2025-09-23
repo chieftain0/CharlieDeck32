@@ -35,7 +35,7 @@ uint16_t matrix_pins[] = {
 
 uint8_t screen[NUM_ROWS_Y][NUM_COLUMNS_X] = {0};
 
-// Button variables (External high pull-up)
+// Button variables (External pull-up up)
 static GPIO_TypeDef *button_ports[8] = {
     GPIOB, // 1 = UP
     GPIOB, // 2 = DOWN
@@ -108,29 +108,29 @@ int main(void)
   static unsigned long time_now = 0;
   time_now = HAL_GetTick();
 
-  int score = 0;
+  int32_t score = 0;
+  uint8_t clickMask = 0;
+  uint8_t pressMask = 0;
 
   while (1)
   {
-    uint8_t _clickMask = 0;
-    uint8_t _pressMask = 0;
-    Poll_Buttons(button_ports, button_pins, NUM_BUTTON_PORTS, GPIO_PIN_RESET, &_clickMask, &_pressMask);
-    if (((_clickMask & BUTTON_UP) || (_clickMask & BUTTON_C)) && mode == MODE_MAIN_MENU)
+    Poll_Buttons(button_ports, button_pins, NUM_BUTTON_PORTS, GPIO_PIN_RESET, &clickMask, &pressMask);
+    if (((clickMask & BUTTON_UP) || (clickMask & BUTTON_C)) && mode == MODE_MAIN_MENU)
     {
       seed_rng();
       mode = MODE_SNAKE;
     }
-    else if (((_clickMask & BUTTON_RIGHT) || (_clickMask & BUTTON_B)) && mode == MODE_MAIN_MENU)
+    else if (((clickMask & BUTTON_RIGHT) || (clickMask & BUTTON_B)) && mode == MODE_MAIN_MENU)
     {
       seed_rng();
       mode = MODE_PONG;
     }
-    else if (((_clickMask & BUTTON_DOWN) || (_clickMask & BUTTON_A)) && mode == MODE_MAIN_MENU)
+    else if (((clickMask & BUTTON_DOWN) || (clickMask & BUTTON_A)) && mode == MODE_MAIN_MENU)
     {
       seed_rng();
       mode = MODE_FLAPPY;
     }
-    else if (((_clickMask & BUTTON_LEFT) || (_clickMask & BUTTON_D)) && mode == MODE_MAIN_MENU)
+    else if (((clickMask & BUTTON_LEFT) || (clickMask & BUTTON_D)) && mode == MODE_MAIN_MENU)
     {
       seed_rng();
       mode = MODE_TETRIS;
@@ -142,7 +142,7 @@ int main(void)
       MainMenuMatrix(screen);
       break;
     case MODE_SNAKE:
-      score = Play_Snake(screen, _clickMask, (uint32_t)HAL_GetTick());
+      score = Play_Snake(screen, clickMask, (uint32_t)HAL_GetTick());
       if (score != -1)
       {
         mode = MODE_SCORE;
@@ -151,7 +151,7 @@ int main(void)
 
       break;
     case MODE_PONG:
-      score = Play_Pong(screen, _pressMask, (uint32_t)HAL_GetTick());
+      score = Play_Pong(screen, pressMask, (uint32_t)HAL_GetTick());
       if (score != -1)
       {
         mode = MODE_SCORE;
@@ -160,7 +160,7 @@ int main(void)
 
       break;
     case MODE_FLAPPY:
-      score = Play_FlappyBird(screen, _clickMask, (uint32_t)HAL_GetTick());
+      score = Play_FlappyBird(screen, clickMask, (uint32_t)HAL_GetTick());
       if (score != -4)
       {
         mode = MODE_SCORE;
@@ -169,7 +169,7 @@ int main(void)
 
       break;
     case MODE_TETRIS:
-      Play_Tetris(screen, _clickMask);
+      Play_Tetris(screen, clickMask);
       break;
     case MODE_SCORE:
       if (HAL_GetTick() - time_now < 3000)
@@ -183,6 +183,8 @@ int main(void)
       break;
     }
     Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, (uint32_t)(TARGET_FPS / (NUM_ROWS_Y * NUM_COLUMNS_X)));
+    clickMask = 0;
+    pressMask = 0;
   }
 }
 
@@ -211,7 +213,7 @@ static inline void seed_rng()
  * @param[in]  PressState   Logical state representing a pressed button
  *                          (`GPIO_PIN_SET` or `GPIO_PIN_RESET`).
  * @param[out] clickMask     Pointer to a uint8_t that will store the click bitmask.
- *                          A bit is set if that button was newly pressed this cycle.
+ *                          A bit is set if that button was released this cycle.
  * @param[out] pressMask     Pointer to a uint8_t that will store the press bitmask.
  *                          A bit is set if that button is currently pressed.
  *
@@ -246,7 +248,7 @@ void Poll_Buttons(GPIO_TypeDef **ButtonPorts, uint16_t *ButtonPins, uint8_t NumB
       _pressMask |= (1 << i);
     }
 
-    // Detect click (rising edge of press)
+    // Detect click (rising edge)
     if (state == PressState && button_flags[i] == 0)
     {
       button_flags[i] = 1;
@@ -311,6 +313,7 @@ void Error_Handler(void)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
+  NVIC_SystemReset();
   while (1)
   {
   }
