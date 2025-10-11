@@ -15,7 +15,7 @@ A minimalist handheld console powered by an STM32 microcontroller and a Charliep
 
 ## Features
 
-* Ultra-compact and portable. No LCD, just LEDs.
+* Ultra-compact and portable
 * Powered by STM32 MCU
 * Efficient LED control via [Charlieplexing](https://en.wikipedia.org/wiki/Charlieplexing): drives many LEDs using few pins.
 * Plays classic games like Flappy Bird, Snake, Pong and Tetris and possibly more
