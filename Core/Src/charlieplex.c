@@ -101,32 +101,14 @@ void Charlieplex_SetLED(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int
  *
  * @warning This function is blocking. Use with caution.
  */
-void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int num_pins, uint8_t matrix[num_pins - 1][num_pins], uint32_t pixel_delay_us)
+void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, int num_pins, uint8_t matrix[num_pins - 1][num_pins])
 {
     for (int i = 0; i < num_pins - 1; i++)
     {
         for (int j = 0; j < num_pins; j++)
         {
             Charlieplex_SetLED(ports, num_ports, pins, num_pins, j, i, matrix[i][j]);
-            Delay_us(pixel_delay_us);
             Charlieplex_SetLED(ports, num_ports, pins, num_pins, j, i, 0);
         }
-    }
-}
-
-/**
- * @brief Delay for a given amount of microseconds using the TIM1 counter.
- *
- * @note This function is blocking and must not be used in interrupt context.
- * @param us Time in microseconds to delay.
- *
- * @warning This function does not overflow check the counter. Ensure that the delay
- *          requested is not so long that the counter will overflow during the delay.
- */
-void Delay_us(uint32_t us)
-{
-    uint32_t start = TIM1->CNT;
-    while (TIM1->CNT - start < us)
-    {
     }
 }

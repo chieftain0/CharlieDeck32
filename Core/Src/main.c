@@ -21,7 +21,6 @@ GPIO_TypeDef *matrix_ports[] = {
     GPIOA, GPIOA, GPIOA, GPIOB, GPIOB, GPIOB, GPIOB, GPIOB,
     GPIOB, GPIOB, GPIOB, GPIOB, GPIOA, GPIOA, GPIOA, GPIOA};
 #define NUM_MATRIX_PORTS (sizeof(matrix_ports) / sizeof(matrix_ports[0]))
-#define TARGET_FPS 300
 
 uint16_t matrix_pins[] = {
     GPIO_PIN_10, GPIO_PIN_9, GPIO_PIN_8, GPIO_PIN_15,
@@ -105,7 +104,7 @@ int main(void)
 
   HAL_GPIO_WritePin(usb_enum_pin_port, usb_enum_pin, GPIO_PIN_SET); // Initialize USB
 
-  static unsigned long time_now = 0;
+  static uint32_t time_now = 0;
   time_now = HAL_GetTick();
 
   int32_t score = 0;
@@ -182,7 +181,7 @@ int main(void)
       }
       break;
     }
-    Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen, (uint32_t)(TARGET_FPS / (NUM_ROWS_Y * NUM_COLUMNS_X)));
+    Charlieplex_Display(matrix_ports, NUM_MATRIX_PORTS, matrix_pins, NUM_MATRIX_PINS, screen);
     clickMask = 0;
     pressMask = 0;
   }
