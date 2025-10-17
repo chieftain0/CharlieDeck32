@@ -107,8 +107,12 @@ void Charlieplex_Display(GPIO_TypeDef **ports, int num_ports, uint16_t *pins, in
     {
         for (int j = 0; j < num_pins; j++)
         {
-            Charlieplex_SetLED(ports, num_ports, pins, num_pins, j, i, matrix[i][j]);
-            Charlieplex_SetLED(ports, num_ports, pins, num_pins, j, i, 0);
+            if (matrix[i][j])
+            {
+                Charlieplex_SetLED(ports, num_ports, pins, num_pins, j, i, matrix[i][j]);
+                __asm volatile("nop");
+                Charlieplex_SetLED(ports, num_ports, pins, num_pins, j, i, 0);
+            }
         }
     }
 }
