@@ -31,21 +31,7 @@ DIAGRAM HERE
 
 * [Git](https://git-scm.com/downloads)
 
-* **Optional**: [MSYS2](https://www.msys2.org/)
-
-* Compile toolchains: [MinGW-W64](https://github.com/niXman/mingw-builds-binaries/releases) and [Ninja](https://github.com/ninja-build/ninja/releases)
-
-  * For Windows MSYS2 (MinGW64):
-
-    ```bash
-    pacman -S --needed --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb mingw-w64-x86_64-ninja
-    ```
-
-  * For Linux:
-
-    ```bash
-    sudo apt install build-essential ninja-build -y
-    ```
+* **Optional**: [MSYS2](https://www.msys2.org/) for Windows
 
 * [ARM None EABI Toolchain](https://developer.arm.com/downloads/-/gnu-rm)
 
@@ -63,17 +49,17 @@ DIAGRAM HERE
     sudo apt install gcc-arm-none-eabi gdb-arm-none-eabi -y
     ```
   
-* [CMake](https://cmake.org/download/)
+* [CMake](https://cmake.org/download/) and [Ninja](https://github.com/ninja-build/ninja/releases)
   * For Windows MSYS2 (MinGW64):
 
     ```bash
-    pacman -S --needed --noconfirm mingw-w64-x86_64-cmake
+    pacman -S --needed --noconfirm mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja
     ```
 
   * For Linux:
 
     ```bash
-    sudo apt install cmake -y
+    sudo apt install cmake ninja-build -y
     ```
 
 * **Optional** for further development: [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx)
