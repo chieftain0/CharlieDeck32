@@ -31,7 +31,7 @@ DIAGRAM HERE
 
 * [Git](https://git-scm.com/downloads)
 
-* **Optional**: [MSYS2](https://www.msys2.org/) for Windows
+* [MSYS2](https://www.msys2.org/) for **Windows**
 
 * [ARM None EABI Toolchain](https://developer.arm.com/downloads/-/gnu-rm)
 
@@ -60,6 +60,19 @@ DIAGRAM HERE
 
     ```bash
     sudo apt install cmake ninja-build -y
+    ```
+
+* [STLink Tools](https://github.com/stlink-org/stlink)
+  * For Windows MSYS2 (MinGW64):
+
+    ```bash
+    pacman -S --needed --noconfirm mingw-w64-x86_64-stlink
+    ```
+
+  * For Linux:
+
+    ```bash
+    sudo apt install stlink-tools -y
     ```
 
 * **Optional** for further development: [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx)
