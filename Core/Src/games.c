@@ -37,55 +37,164 @@
 #define JUMP 3
 
 // Tetris defines
-uint8_t tetromino[7][4][4] = {
-    // I
+#define CLOCKWISE 0
+#define COUNTERCLOCKWISE 1
+#define TETRIS_SPEED 100
+#define TETRIS_GRAVITY (-1)
+
+// 0deg, 90deg, 180deg, 270deg
+uint8_t I_tetromino[4][3][3] = {
     {
-        {1, 0, 0, 0},
-        {1, 0, 0, 0},
-        {1, 0, 0, 0},
-        {1, 0, 0, 0},
+        {1, 0, 0},
+        {1, 0, 0},
+        {1, 0, 0},
     },
-    // O
     {
-        {1, 1, 0, 0},
-        {1, 1, 0, 0},
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
+        {1, 1, 1},
+        {0, 0, 0},
+        {0, 0, 0},
     },
-    // T
     {
-        {1, 1, 1, 0},
-        {0, 1, 0, 0},
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
+        {1, 0, 0},
+        {1, 0, 0},
+        {1, 0, 0},
     },
-    // S
     {
-        {0, 1, 1, 0},
-        {1, 1, 0, 0},
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
+        {1, 1, 1},
+        {0, 0, 0},
+        {0, 0, 0},
     },
-    // Z
+};
+uint8_t O_tetromino[4][3][3] = {
     {
-        {1, 1, 0, 0},
-        {0, 1, 1, 0},
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
+        {1, 1, 0},
+        {1, 1, 0},
+        {0, 0, 0},
     },
-    // L
     {
-        {1, 0, 0, 0},
-        {1, 0, 0, 0},
-        {1, 0, 0, 0},
-        {1, 1, 0, 0},
+        {1, 1, 0},
+        {1, 1, 0},
+        {0, 0, 0},
     },
-    // J
     {
-        {0, 1, 0, 0},
-        {0, 1, 0, 0},
-        {0, 1, 0, 0},
-        {1, 1, 0, 0},
+        {1, 1, 0},
+        {1, 1, 0},
+        {0, 0, 0},
+    },
+    {
+        {1, 1, 0},
+        {1, 1, 0},
+        {0, 0, 0},
+    },
+};
+uint8_t T_tetromino[4][3][3] = {
+    {
+        {1, 1, 1},
+        {0, 1, 0},
+        {0, 0, 0},
+    },
+    {
+        {1, 0, 0},
+        {1, 1, 0},
+        {1, 0, 0},
+    },
+    {
+        {0, 1, 0},
+        {1, 1, 1},
+        {0, 0, 0},
+    },
+    {
+        {0, 1, 0},
+        {1, 1, 0},
+        {0, 1, 0},
+    },
+};
+uint8_t S_tetromino[4][3][3] = {
+    {
+        {0, 1, 1},
+        {1, 1, 0},
+        {0, 0, 0},
+    },
+    {
+        {1, 0, 0},
+        {1, 1, 0},
+        {0, 1, 0},
+    },
+    {
+        {0, 1, 1},
+        {1, 1, 0},
+        {0, 0, 0},
+    },
+    {
+        {1, 0, 0},
+        {1, 1, 0},
+        {0, 1, 0},
+    },
+};
+uint8_t Z_tetromino[4][3][3] = {
+    {
+        {1, 1, 0},
+        {0, 1, 1},
+        {0, 0, 0},
+    },
+    {
+        {0, 1, 0},
+        {1, 1, 0},
+        {1, 0, 0},
+    },
+    {
+        {1, 1, 0},
+        {0, 1, 1},
+        {0, 0, 0},
+    },
+    {
+        {0, 1, 0},
+        {1, 1, 0},
+        {1, 0, 0},
+    },
+};
+uint8_t L_tetromino[4][3][3] = {
+    {
+        {1, 0, 0},
+        {1, 0, 0},
+        {1, 1, 0},
+    },
+    {
+        {0, 0, 1},
+        {1, 1, 1},
+        {0, 0, 0},
+    },
+    {
+        {1, 1, 0},
+        {0, 1, 0},
+        {0, 1, 0},
+    },
+    {
+        {1, 1, 1},
+        {0, 0, 1},
+        {0, 0, 0},
+    },
+};
+uint8_t J_tetromino[4][3][3] = {
+    {
+        {0, 1, 0},
+        {0, 1, 0},
+        {1, 1, 0},
+    },
+    {
+        {1, 1, 1},
+        {0, 0, 1},
+        {0, 0, 0},
+    },
+    {
+        {1, 1, 0},
+        {1, 0, 0},
+        {1, 0, 0},
+    },
+    {
+        {0, 0, 1},
+        {1, 1, 1},
+        {0, 0, 0},
     },
 };
 
@@ -618,9 +727,11 @@ int32_t Play_FlappyBird(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t but
     return -4;
 }
 
-int32_t Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_click)
+int32_t Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_mask_click, uint32_t time_now)
 {
     static uint32_t prev_time = 0;
+    static uint8_t spawn_tetromino = 1;
+    static uint8_t random_tetromino_index = 0;
 
     // If this is the first time running, clear the screen
     static uint8_t first_time_running = 1;
@@ -628,6 +739,12 @@ int32_t Play_Tetris(uint8_t matrix[SCREEN_HEIGHT][SCREEN_WIDTH], uint8_t button_
     {
         clear_screen(matrix);
         first_time_running = 0;
+    }
+
+    if (spawn_tetromino == 1)
+    {
+        random_tetromino_index = rand() % 7;
+        spawn_tetromino = 0;
     }
 }
 

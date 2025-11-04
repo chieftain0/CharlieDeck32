@@ -141,7 +141,7 @@ int main(void)
       MainMenuMatrix(screen);
       break;
     case MODE_SNAKE:
-      score = Play_Snake(screen, clickMask, (uint32_t)HAL_GetTick());
+      score = Play_Snake(screen, clickMask, HAL_GetTick());
       if (score != -1)
       {
         mode = MODE_SCORE;
@@ -150,7 +150,7 @@ int main(void)
 
       break;
     case MODE_PONG:
-      score = Play_Pong(screen, pressMask, (uint32_t)HAL_GetTick());
+      score = Play_Pong(screen, pressMask, HAL_GetTick());
       if (score != -1)
       {
         mode = MODE_SCORE;
@@ -159,7 +159,7 @@ int main(void)
 
       break;
     case MODE_FLAPPY:
-      score = Play_FlappyBird(screen, clickMask, (uint32_t)HAL_GetTick());
+      score = Play_FlappyBird(screen, clickMask, HAL_GetTick());
       if (score != -4)
       {
         mode = MODE_SCORE;
@@ -168,7 +168,7 @@ int main(void)
 
       break;
     case MODE_TETRIS:
-      Play_Tetris(screen, clickMask);
+      Play_Tetris(screen, clickMask, HAL_GetTick());
       break;
     case MODE_SCORE:
       if (HAL_GetTick() - time_now < 3000)
