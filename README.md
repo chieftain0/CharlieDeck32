@@ -138,8 +138,6 @@ arm-none-eabi-objdump -f bin/Release/CharlieDeck32.elf
 
 ## Project Roadmap & TODOs
 
-* Make LED display function non-blocking.
-  * FreeRTOS?
 * Program the Tetris game.
 
 ## License
